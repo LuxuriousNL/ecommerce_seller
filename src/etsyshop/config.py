@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     anthropic_api_key: str = Field(default="", alias="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(default="claude-opus-4-8", alias="ANTHROPIC_MODEL")
 
+    # Image generation (the seam)
+    openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
+    recraft_api_key: str = Field(default="", alias="RECRAFT_API_KEY")
+    image_provider: str = Field(default="auto", alias="IMAGE_PROVIDER")  # auto|openai|recraft|manual
+
     def require(self, *names: str) -> None:
         """Raise a clear error if any named setting is empty."""
         missing = [n for n in names if not getattr(self, n)]

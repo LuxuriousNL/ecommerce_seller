@@ -26,3 +26,7 @@ out/
 
 # Runtime state (listing<->product mapping)
 .state/
+
+# Generated artwork + briefs (keep examples only)
+designs/art/
+designs/briefs/

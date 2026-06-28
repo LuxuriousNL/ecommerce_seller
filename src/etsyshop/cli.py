@@ -413,6 +413,47 @@ def price_cmd(
     console.print(f"Max safe discount: {rec.max_safe_discount*100:.0f}%")
 
 
+# --- Image generation seam ---
+@app.command("design")
+def design_cmd(
+    slug: str = typer.Option(..., help="Output filename stem."),
+    product_type: str = typer.Option("Poster", help="Product type (vector if sticker/tee)."),
+    subject: str = typer.Option("", help="What to depict."),
+    style: str = typer.Option("", help="Style/medium."),
+    palette: str = typer.Option("", help="Colour palette."),
+    niche: str = typer.Option("", help="Or: derive a brief from this niche via Claude."),
+    qc: bool = typer.Option(True, help="Run the Claude-vision QC gate."),
+) -> None:
+    """Generate artwork from a design brief (or write the brief in manual mode)."""
+    from etsyshop.design import create_design
+    from etsyshop.models import DesignBrief
+
+    if niche:
+        from etsyshop.ideate import ideate
+        from etsyshop.trends import load_trends
+
+        n = next((x for x in load_trends() if x.slug == niche), None)
+        if n is None:
+            raise typer.BadParameter(f"Unknown niche '{niche}'.")
+        concept = ideate(n, 1)[0]
+        brief, product_type = concept.design, concept.product_type
+        slug = slug or concept.slug
+    else:
+        if not subject:
+            raise typer.BadParameter("Provide --subject (and ideally --style/--palette) or --niche.")
+        brief = DesignBrief(subject=subject, style=style or "clean modern illustration",
+                            palette=palette or "balanced, tasteful")
+
+    art = create_design(slug, brief, product_type=product_type, qc=qc)
+    console.print(f"[bold]{art.slug}[/bold] — status: {art.status} (provider: {art.provider})")
+    if art.path:
+        console.print(f"  file: {art.path}")
+    if art.error:
+        console.print(f"  [red]error:[/red] {art.error}")
+    if art.qc and not art.qc.passed:
+        console.print(f"  [yellow]QC issues:[/yellow] {', '.join(art.qc.issues)}")
+
+
 # --- Phase 4: web dashboard ---
 @app.command("dashboard")
 def dashboard(
