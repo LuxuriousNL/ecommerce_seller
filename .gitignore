@@ -21,6 +21,8 @@ dist/
 .vscode/
 
 # Local working data
-data/
 out/
 *.log
+
+# Runtime state (listing<->product mapping)
+.state/

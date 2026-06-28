@@ -1,0 +1,132 @@
+{
+  "source": "deep-research report 5 / 'Best Etsy Niches from Now to December' (2026)",
+  "month_legend": "window = active months; peak = strongest months (1=Jan .. 12=Dec)",
+  "niches": [
+    {
+      "slug": "personalised-ornaments", "rank": 1, "name": "Personalised family & name ornaments",
+      "demand": "high", "competition": "high", "margin_low": 0.45, "margin_high": 0.65,
+      "complexity": "low-medium", "kind": "pod", "printify_fit": true,
+      "blueprint_hint": "Ceramic / metal ornament", "price_low": 9, "price_high": 28,
+      "window": [9,10,11,12], "peak": [10,11,12],
+      "keywords": ["personalised christmas ornament","family ornament","first christmas","custom name ornament","newlywed gift","pet ornament","keepsake gift"],
+      "micro_positioning": ["family + pets","cleaner minimalist design language","premium gift-ready packaging","regional/cultural motifs"],
+      "why": "Huge gifting fit, strong personalisation, proven Etsy holiday demand.",
+      "etsy_taxonomy": "Ornaments",
+      "etsy_attributes": {"Occasion": "Christmas", "Holiday": "Christmas"}
+    },
+    {
+      "slug": "halloween-svg", "rank": 2, "name": "Halloween SVGs & cut files",
+      "demand": "high", "competition": "high", "margin_low": 0.75, "margin_high": 0.90,
+      "complexity": "low", "kind": "digital", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 1, "price_high": 15,
+      "window": [7,8,9,10], "peak": [8,9,10],
+      "keywords": ["halloween svg","spooky season svg","ghost svg","bat svg","door hanger svg","glowforge file","cricut halloween"],
+      "micro_positioning": ["coquette/neon/goth aesthetic","classroom-friendly bundle","retro pink ghost","commercial-use licence"],
+      "why": "Early seasonal spike, instant fulfilment, very low variable cost."
+    },
+    {
+      "slug": "digital-planners", "rank": 3, "name": "Digital planners & New Year goal systems",
+      "demand": "high", "competition": "high", "margin_low": 0.80, "margin_high": 0.92,
+      "complexity": "medium", "kind": "digital", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 3, "price_high": 15,
+      "window": [10,11,12,1], "peak": [11,12,1],
+      "keywords": ["digital planner","goodnotes planner","adhd planner","2027 planner","goal setting workbook","yearly reset","budget tracker"],
+      "micro_positioning": ["ADHD + minimalism","student semester planner","couples planner","calm aesthetics + onboarding"],
+      "why": "Strong template economy, recurring annual refresh, late-Q4 and January pull."
+    },
+    {
+      "slug": "teacher-gifts", "rank": 4, "name": "Teacher gifts & classroom accessories",
+      "demand": "high", "competition": "high", "margin_low": 0.45, "margin_high": 0.70,
+      "complexity": "low-medium", "kind": "pod", "printify_fit": true,
+      "blueprint_hint": "Mug / tote bag", "price_low": 3, "price_high": 20,
+      "window": [7,8,9,12], "peak": [8],
+      "keywords": ["teacher gift","back to school gift","personalised teacher gift","classroom sign","teacher mug","end of year teacher gift"],
+      "micro_positioning": ["subject-area specific","grade-specific","eco materials","gift-ready under a price point"],
+      "why": "Broad buyer base, clear occasion, strong personalisation.",
+      "etsy_taxonomy": "Mugs",
+      "etsy_attributes": {"Occasion": "Back to School", "Recipient": "Teacher"}
+    },
+    {
+      "slug": "dorm-decor", "rank": 5, "name": "Dorm decor printables & wall art",
+      "demand": "medium-high", "competition": "high", "margin_low": 0.40, "margin_high": 0.90,
+      "complexity": "low", "kind": "pod", "printify_fit": true,
+      "blueprint_hint": "Poster / matte print", "price_low": 6, "price_high": 20,
+      "window": [7,8,9], "peak": [8],
+      "keywords": ["dorm decor","college wall art","dorm room poster set","coquette dorm decor","personalised pennant","college gift"],
+      "micro_positioning": ["school identity / colours","room-theme systems","editable colours","move-in kit positioning"],
+      "why": "Back-to-school timing, low fulfilment friction, strong Gen Z decor angle."
+    },
+    {
+      "slug": "engraved-host-gifts", "rank": 6, "name": "Engraved cutting boards & host gifts",
+      "demand": "medium-high", "competition": "high", "margin_low": 0.40, "margin_high": 0.60,
+      "complexity": "medium", "kind": "physical", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 16, "price_high": 60,
+      "window": [9,10,11,12], "peak": [11,12],
+      "keywords": ["personalised cutting board","engraved charcuterie board","host gift","housewarming gift","recipe board","family kitchen gift"],
+      "micro_positioning": ["handwriting engraving","premium wood species","host gift + napkin set","faster dispatch window"],
+      "why": "Etsy flagged engraved cutting board searches up 60%; strong host-gift demand."
+    },
+    {
+      "slug": "advent-calendars", "rank": 7, "name": "Reusable & personalised advent calendars",
+      "demand": "medium-high", "competition": "medium", "margin_low": 0.35, "margin_high": 0.90,
+      "complexity": "medium-high", "kind": "physical", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 2, "price_high": 60,
+      "window": [9,10,11], "peak": [10,11],
+      "keywords": ["advent calendar","reusable advent calendar","personalised advent calendar","christmas countdown","kids advent","advent activity cards"],
+      "micro_positioning": ["reusable / heirloom","refill-friendly format","special-interest themes","matching filler cards"],
+      "why": "Reusable, custom, highly giftable, recurring every year."
+    },
+    {
+      "slug": "halloween-invitations", "rank": 8, "name": "Halloween invitation templates & party packs",
+      "demand": "medium", "competition": "medium-high", "margin_low": 0.80, "margin_high": 0.92,
+      "complexity": "low", "kind": "digital", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 2, "price_high": 18,
+      "window": [7,8,9,10], "peak": [9,10],
+      "keywords": ["halloween invitation template","boo bash invitation","editable canva invite","spooky party invite","halloween flyer","trick or treat invite"],
+      "micro_positioning": ["cohesive themed suites","animated mobile versions","child/adult variants","bundle with favour tags"],
+      "why": "Cheap, fast, strongly occasion-led, easy to bundle."
+    },
+    {
+      "slug": "pet-memorial-ornaments", "rank": 9, "name": "Pet memorial ornaments & keepsakes",
+      "demand": "medium-high", "competition": "medium", "margin_low": 0.45, "margin_high": 0.65,
+      "complexity": "medium", "kind": "pod", "printify_fit": true,
+      "blueprint_hint": "Ceramic ornament", "price_low": 12, "price_high": 30,
+      "window": [9,10,11,12], "peak": [10,11,12],
+      "keywords": ["pet memorial ornament","rainbow bridge gift","custom dog ornament","cat loss keepsake","pet sympathy gift"],
+      "micro_positioning": ["distinct art style","sentiment without cliche","breed-specific options","memorial + holiday pairing"],
+      "why": "Emotional purchase, strong Etsy pet trend (+32%), gifting overlap.",
+      "etsy_taxonomy": "Ornaments",
+      "etsy_attributes": {"Occasion": "Christmas", "Holiday": "Christmas"}
+    },
+    {
+      "slug": "printable-gift-tags", "rank": 10, "name": "Christmas printable gift tags & wrapping",
+      "demand": "medium", "competition": "medium-high", "margin_low": 0.85, "margin_high": 0.95,
+      "complexity": "low", "kind": "digital", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 1.5, "price_high": 6,
+      "window": [10,11,12], "peak": [11,12],
+      "keywords": ["printable christmas gift tags","editable holiday tags","canva gift tags","teacher christmas tag","simmer pot tag","holiday wrapping insert"],
+      "micro_positioning": ["editable names","premium typography","teacher/corporate versions","bundle upsells"],
+      "why": "Last-minute digital rescue product; easy upsell and bundle."
+    },
+    {
+      "slug": "holiday-candles", "rank": 11, "name": "Small-batch holiday candles & wax melts",
+      "demand": "medium-high", "competition": "high", "margin_low": 0.35, "margin_high": 0.55,
+      "complexity": "medium-high", "kind": "physical", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 12, "price_high": 35,
+      "window": [9,10,11,12], "peak": [10,11,12],
+      "keywords": ["christmas candle","holiday soy candle","non-toxic candle","winter candle gift","small batch candle","festive wax melts"],
+      "micro_positioning": ["signature scent stories","refill options","tangible eco credentials","gift trio sets"],
+      "why": "Strong cosy-home and gifting fit; shipping/breakage is the trade-off."
+    },
+    {
+      "slug": "thanksgiving-tablescape", "rank": 12, "name": "Thanksgiving & holiday tablescape goods",
+      "demand": "medium", "competition": "medium", "margin_low": 0.50, "margin_high": 0.80,
+      "complexity": "medium", "kind": "physical", "printify_fit": false,
+      "blueprint_hint": null, "price_low": 8, "price_high": 30,
+      "window": [9,10,11], "peak": [10,11],
+      "keywords": ["thanksgiving place cards","friendsgiving decor","cocktail napkins","host gift","personalised table setting","dinner party decor"],
+      "micro_positioning": ["matching collections","colour systems","surname/monogram options","fast dispatch before Thanksgiving"],
+      "why": "Etsy flagged table settings +1000%, glassware +12x, cocktail napkins as top gifts."
+    }
+  ]
+}

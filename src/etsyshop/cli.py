@@ -19,12 +19,14 @@ catalog_app = typer.Typer(help="Browse Printify's catalog to build product templ
 products_app = typer.Typer(help="Create and publish products.")
 orders_app = typer.Typer(help="Order operations.")
 listing_app = typer.Typer(help="Enrich Etsy listings beyond what Printify can set.")
+publish_app = typer.Typer(help="Architecture B: create and own the Etsy listing.")
 app.add_typer(printify_app, name="printify")
 app.add_typer(etsy_app, name="etsy")
 app.add_typer(catalog_app, name="catalog")
 app.add_typer(products_app, name="products")
 app.add_typer(orders_app, name="orders")
 app.add_typer(listing_app, name="listing")
+app.add_typer(publish_app, name="publish")
 console = Console()
 
 
@@ -194,6 +196,75 @@ def orders_status() -> None:
     for issue in report.issues:
         table.add_row(issue.source, issue.order_id, issue.reason, issue.detail)
     console.print(table)
+
+
+# --- Architecture B: we create and own the Etsy listing ---
+@publish_app.command("pod")
+def publish_pod(
+    template: str = typer.Option(..., help="Product template JSON (with etsy_taxonomy)."),
+    manifest: str = typer.Option(..., help="Design manifest JSON."),
+    shipping_profile_id: int = typer.Option(None, help="Etsy shipping profile id (physical)."),
+    optimize: bool = typer.Option(True, help="Generate full SEO per design (Claude)."),
+    activate: bool = typer.Option(False, help="Make listings live (default: draft)."),
+) -> None:
+    """POD via Architecture B: Printify renders -> we create & own the Etsy listing."""
+    from etsyshop.mockups import select_mockups
+    from etsyshop.publisher import draft_for_pod, publish_listing
+    from etsyshop.store import ListingRecord, save_record
+
+    tmpl = ProductTemplate.load(template)
+    designs = DesignManifest.load(manifest).designs
+    optimize_fn = None
+    if optimize:
+        from etsyshop.optimize import optimize_listing
+
+        def optimize_fn(design):  # noqa: ANN001
+            return optimize_listing(design, tmpl)
+
+    etsy = _etsy()
+    table = Table("design", "printify product", "etsy listing", "state", "imgs", "error")
+    with _printify() as p:
+        for design in designs:
+            result = create_design_product(p, tmpl, design, listing=None, publish=False)
+            if not result.product_id:
+                table.add_row(design.slug, "-", "-", "-", "0", result.error or "")
+                continue
+            product = p.get_product(result.product_id)
+            image_urls = [m.url for m in select_mockups(product)]
+            listing = optimize_fn(design) if optimize_fn else None
+            draft = draft_for_pod(tmpl, image_urls, listing=listing,
+                                  shipping_profile_id=shipping_profile_id or None)
+            pub = publish_listing(etsy, draft, activate=activate, fetch=p.download)
+            if pub.listing_id and not pub.error:
+                save_record(ListingRecord(
+                    etsy_listing_id=pub.listing_id, slug=design.slug,
+                    printify_product_id=result.product_id,
+                    default_variant_id=(tmpl.variant_ids[0] if tmpl.variant_ids else None),
+                ))
+            table.add_row(design.slug, result.product_id, pub.listing_id or "-",
+                          pub.state, str(pub.images_uploaded), pub.error or "")
+    console.print(table)
+    console.print("[dim]Mapping saved to .state/listings.json for order fulfillment.[/dim]")
+
+
+@app.command("fulfill")
+def fulfill_cmd(
+    receipt_id: str = typer.Option(..., help="Etsy receipt (order) id."),
+    send: bool = typer.Option(False, help="Also send the Printify order to production."),
+) -> None:
+    """Manual bridge: turn an Etsy order into a Printify production order (Architecture B)."""
+    from etsyshop.fulfill import fulfill_receipt
+    from etsyshop.store import load_store
+
+    etsy = _etsy()
+    receipt = etsy.get_receipt(receipt_id)
+    with _printify() as p:
+        res = fulfill_receipt(p, load_store(), receipt, send_to_production=send)
+    console.print(f"Receipt {res.receipt_id}: orders created {res.orders_created or '-'}")
+    if res.skipped_listings:
+        console.print(f"[yellow]skipped (no mapping):[/yellow] {', '.join(res.skipped_listings)}")
+    for err in res.errors:
+        console.print(f"[red]error[/red] {err}")
 
 
 # --- Listing enrichment: set Etsy category + attributes Printify can't ---

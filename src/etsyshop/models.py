@@ -146,3 +146,24 @@ class OptimizedListing(BaseModel):
     tags: list[str] = Field(default_factory=list)
     description: str
     materials: list[str] = Field(default_factory=list)
+
+
+class ListingDraft(BaseModel):
+    """Everything needed to create one Etsy listing in Architecture B (we own it)."""
+
+    title: str
+    description: str
+    price: float
+    quantity: int = 999
+    listing_type: str = "physical"  # "physical" or "download"
+    who_made: str = "i_did"
+    when_made: str = "made_to_order"
+    tags: list[str] = Field(default_factory=list)
+    materials: list[str] = Field(default_factory=list)
+    taxonomy_query: str | None = None
+    attributes: dict[str, str] = Field(default_factory=dict)
+    is_personalizable: bool = False
+    shipping_profile_id: int | None = None
+    alt_text: str | None = None
+    image_urls: list[str] = Field(default_factory=list)   # Printify mockups to relay
+    digital_files: list[str] = Field(default_factory=list)  # local paths (download type)

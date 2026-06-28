@@ -193,6 +193,10 @@ class EtsyClient:
         sid = shop_id or self.shop_id
         return self._request("GET", f"/application/shops/{sid}/receipts", params=params)
 
+    def get_receipt(self, receipt_id: int | str, shop_id: str | None = None) -> dict:
+        sid = shop_id or self.shop_id
+        return self._request("GET", f"/application/shops/{sid}/receipts/{receipt_id}")
+
     # --- Listing enrichment (the fields Printify's Etsy sync does NOT set) ---
     def get_listing(self, listing_id: int | str) -> dict:
         return self._request("GET", f"/application/listings/{listing_id}")
@@ -257,3 +261,98 @@ class EtsyClient:
             f"/application/shops/{sid}/listings/{listing_id}/properties/{property_id}",
             data=data,
         )
+
+    # --- Architecture B: we create and own the Etsy listing ---
+    def create_draft_listing(
+        self,
+        *,
+        title: str,
+        description: str,
+        price: float,
+        taxonomy_id: int,
+        quantity: int = 999,
+        who_made: str = "i_did",
+        when_made: str = "made_to_order",
+        listing_type: str = "physical",  # "physical" or "download"
+        tags: list[str] | None = None,
+        materials: list[str] | None = None,
+        shipping_profile_id: int | None = None,
+        return_policy_id: int | None = None,
+        is_personalizable: bool | None = None,
+        shop_id: str | None = None,
+        **extra: Any,
+    ) -> dict:
+        """Create a draft listing (POST, form-encoded). Activate later via update_listing."""
+        sid = shop_id or self.shop_id
+        data: dict[str, Any] = {
+            "quantity": quantity,
+            "title": title,
+            "description": description,
+            "price": price,
+            "who_made": who_made,
+            "when_made": when_made,
+            "taxonomy_id": taxonomy_id,
+            "type": listing_type,
+        }
+        if tags is not None:
+            data["tags"] = tags
+        if materials is not None:
+            data["materials"] = materials
+        if shipping_profile_id is not None:
+            data["shipping_profile_id"] = shipping_profile_id
+        if return_policy_id is not None:
+            data["return_policy_id"] = return_policy_id
+        if is_personalizable is not None:
+            data["is_personalizable"] = is_personalizable
+        data.update(extra)
+        return self._request("POST", f"/application/shops/{sid}/listings", data=data)
+
+    def activate_listing(self, listing_id: int | str, shop_id: str | None = None) -> dict:
+        """Move a draft listing to active (publicly visible)."""
+        return self.update_listing(listing_id, shop_id=shop_id, state="active")
+
+    def upload_listing_image(
+        self,
+        listing_id: int | str,
+        image: bytes,
+        *,
+        rank: int = 1,
+        alt_text: str | None = None,
+        filename: str = "mockup.png",
+        mime: str = "image/png",
+        shop_id: str | None = None,
+    ) -> dict:
+        """Upload one image (multipart) to a listing; rank 1 is the hero/thumbnail."""
+        sid = shop_id or self.shop_id
+        data: dict[str, Any] = {"rank": rank}
+        if alt_text:
+            data["alt_text"] = alt_text[:500]
+        return self._request(
+            "POST",
+            f"/application/shops/{sid}/listings/{listing_id}/images",
+            data=data,
+            files={"image": (filename, image, mime)},
+        )
+
+    def upload_listing_file(
+        self,
+        listing_id: int | str,
+        file_bytes: bytes,
+        name: str,
+        *,
+        rank: int = 1,
+        mime: str = "application/octet-stream",
+        shop_id: str | None = None,
+    ) -> dict:
+        """Upload a digital download file (multipart) to a download-type listing."""
+        sid = shop_id or self.shop_id
+        return self._request(
+            "POST",
+            f"/application/shops/{sid}/listings/{listing_id}/files",
+            data={"name": name, "rank": rank},
+            files={"file": (name, file_bytes, mime)},
+        )
+
+    def get_shipping_profiles(self, shop_id: str | None = None) -> dict:
+        sid = shop_id or self.shop_id
+        return self._request("GET", f"/application/shops/{sid}/shipping-profiles")

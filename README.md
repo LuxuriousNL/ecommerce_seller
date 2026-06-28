@@ -127,6 +127,38 @@ regulatory fees. It returns a list price (charm/prestige rounding), break-even,
 report's worked examples in `tests/test_pricing.py`. Product templates can carry
 `product_cost` + `target_margin` to price automatically instead of a constant.
 
+### Architecture B — we own the Etsy listing
+
+Two ways to get a product onto Etsy:
+
+- **A (Printify owns the listing):** `products create --publish --enrich` — Printify
+  auto-fulfills; we enrich category/attributes after. Fastest to live; less control.
+- **B (we own the listing):** `publish pod` — Printify stays the production +
+  mockup renderer, but **we** create the Etsy listing via the API with full SEO
+  control from the start (category, all tags, attributes, materials, alt text,
+  hero-image order). Required for digital products (planners/SVGs), which
+  Printify can't publish at all.
+
+```bash
+# B: create the product in Printify, relay its mockups, own the Etsy listing
+etsyshop publish pod --template templates/tshirt.example.json \
+                     --manifest designs/manifest.example.json \
+                     --shipping-profile-id 123456 --activate
+```
+
+In B, Printify doesn't auto-fulfill (it doesn't own the listing), so order
+routing is a **manual bridge** — deferred until volume justifies automation, but
+present from day one. The publish step records `etsy_listing_id ↔ printify_product`
+in `.state/listings.json`; when an order arrives:
+
+```bash
+etsyshop fulfill --receipt-id 9001 --send   # creates the Printify order + sends to production
+```
+
+Mockups are **not** rendered by us — Printify still composites the design onto
+the product; we relay those images to our listing (hero first) and can set
+`alt_text` and inject a distinctive hero ahead of the generic mockups.
+
 ### Etsy listing enrichment (overcoming Printify's SEO gap)
 
 Printify's Etsy sync only sets title/description/tags/price/images — it leaves

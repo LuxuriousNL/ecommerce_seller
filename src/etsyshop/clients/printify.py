@@ -120,3 +120,22 @@ class PrintifyClient:
     # --- Orders ---
     def list_orders(self, shop_id: str | None = None) -> dict:
         return self._request("GET", f"/shops/{self._shop(shop_id)}/orders.json")
+
+    def create_order(self, payload: dict, shop_id: str | None = None) -> dict:
+        """Submit an order to Printify for production (Architecture B fulfillment bridge)."""
+        return self._request(
+            "POST", f"/shops/{self._shop(shop_id)}/orders.json", json=payload
+        )
+
+    def send_to_production(self, order_id: str, shop_id: str | None = None) -> Any:
+        return self._request(
+            "POST",
+            f"/shops/{self._shop(shop_id)}/orders/{order_id}/send_to_production.json",
+        )
+
+    def download(self, url: str, timeout: float = 30.0) -> bytes:
+        """Fetch rendered mockup bytes from Printify's CDN (to relay to Etsy)."""
+        resp = httpx.get(url, timeout=timeout)
+        if resp.status_code >= 400:
+            raise PrintifyError(f"download {url} -> {resp.status_code}")
+        return resp.content
