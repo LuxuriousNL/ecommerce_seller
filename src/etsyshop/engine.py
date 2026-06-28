@@ -24,6 +24,23 @@ _COST_BY_KEYWORD = {
 _DEFAULT_COST = 8.0
 
 
+def product_cost_from_printify(product: dict) -> float | None:
+    """Real cost-of-goods: the lowest enabled variant cost (in dollars).
+
+    Printify reports variant `cost` (what it charges you) in cents on the
+    product object. Use this in place of `estimate_product_cost` once a product
+    exists.
+    """
+    costs = [
+        v["cost"]
+        for v in (product.get("variants") or [])
+        if v.get("is_enabled", True)
+        and isinstance(v.get("cost"), (int, float))
+        and v["cost"] > 0
+    ]
+    return min(costs) / 100.0 if costs else None
+
+
 def estimate_product_cost(concept: ProductConcept, niche: TrendNiche) -> float:
     # The concept's own product type wins; fall back to the niche's blueprint hint.
     for text in (concept.product_type.lower(), (niche.blueprint_hint or "").lower()):

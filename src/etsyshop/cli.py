@@ -234,6 +234,15 @@ def publish_pod(
             listing = optimize_fn(design) if optimize_fn else None
             draft = draft_for_pod(tmpl, image_urls, listing=listing,
                                   shipping_profile_id=shipping_profile_id or None)
+            # E5.1: reprice with the real Printify variant cost when available.
+            from etsyshop.engine import product_cost_from_printify
+            real_cost = product_cost_from_printify(product)
+            if real_cost and tmpl.target_margin:
+                from etsyshop.pricing import SCHEDULES, US, CostInputs, recommend_price
+                fees = SCHEDULES.get(tmpl.fee_country, US)
+                draft.price = recommend_price(
+                    CostInputs(product_cost=real_cost), fees, target_margin=tmpl.target_margin
+                ).list_price
             pub = publish_listing(etsy, draft, activate=activate, fetch=p.download)
             if pub.listing_id and not pub.error:
                 save_record(ListingRecord(

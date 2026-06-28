@@ -12,6 +12,7 @@ import hashlib
 import json
 import secrets
 import threading
+import time
 import urllib.parse
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -19,6 +20,8 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+
+from etsyshop.retry import RETRY_STATUSES, retry_delay
 
 API_BASE = "https://openapi.etsy.com/v3"
 CONNECT_URL = "https://www.etsy.com/oauth/connect"
@@ -61,13 +64,15 @@ class _CallbackHandler(BaseHTTPRequestHandler):
 
 class EtsyClient:
     def __init__(self, api_key: str, redirect_uri: str, shop_id: str | None = None,
-                 timeout: float = 30.0):
+                 timeout: float = 30.0, max_retries: int = 2):
         if not api_key:
             raise EtsyError("ETSY_API_KEY is not set.")
         self.api_key = api_key
         self.redirect_uri = redirect_uri
         self.shop_id = shop_id
         self._timeout = timeout
+        self._max_retries = max_retries
+        self._sleep = time.sleep  # injectable in tests
         self._tokens = self._load_tokens()
 
     # --- Token persistence ---
@@ -161,12 +166,17 @@ class EtsyClient:
             "x-api-key": self.api_key,
             "Authorization": f"Bearer {self._tokens['access_token']}",
         }
-        resp = httpx.request(
-            method, f"{API_BASE}{path}", headers=headers, timeout=self._timeout, **kwargs
-        )
-        if resp.status_code == 401 and not _retried:
-            self._refresh()
-            return self._request(method, path, _retried=True, **kwargs)
+        for attempt in range(self._max_retries + 1):
+            resp = httpx.request(
+                method, f"{API_BASE}{path}", headers=headers, timeout=self._timeout, **kwargs
+            )
+            if resp.status_code == 401 and not _retried:
+                self._refresh()
+                return self._request(method, path, _retried=True, **kwargs)
+            if resp.status_code in RETRY_STATUSES and attempt < self._max_retries:
+                self._sleep(retry_delay(resp, attempt))
+                continue
+            break
         if resp.status_code >= 400:
             raise EtsyError(f"{method} {path} -> {resp.status_code}: {resp.text}")
         return resp.json() if resp.content else None

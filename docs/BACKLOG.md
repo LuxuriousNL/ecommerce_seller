@@ -47,8 +47,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   candidates; `trends --signals` surfaces emerging terms. _AC: tested with fixtures._
 
 ## Epic 5 — Improvements (brought in)
-- [ ] **E5.1** Real Printify variant cost lookup → replace `estimate_product_cost`.
-- [ ] **E5.2** Client resilience: retry + backoff + rate-limit handling for Etsy
+- [x] **E5.1** Real Printify variant cost lookup → replace `estimate_product_cost`.
+- [x] **E5.2** Client resilience: retry + backoff + rate-limit handling for Etsy
   (10/s, 10k/day) and Printify (200/30min publish). _AC: tested._
 - [ ] **E5.3** Multi-variant Etsy listings in B (`updateListingInventory`) +
   variant_map population for accurate fulfillment routing.
@@ -70,3 +70,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - I3: E3.3 B smoke-test harness (create->readback->diff->delete); E4.1 trendscanner subproject scaffold + TrendSignal.
 - I4: trendscanner vertical — RSS source (parse+robots-aware fetch), aggregator (ngram frequency), etsyshop bridge (match+emerging). E4.3/E4.4 sources next.
 - I5: trendscanner sources complete — Google Trends (official RSS) + ecommerce (JSON-LD, robots-aware) + scan runner/CLI (trendscan) writing a feed file. Epic 4 done.
+- I6: E5.1 real Printify variant cost (min enabled, used in publish pod repricing); E5.2 retry+backoff (Retry-After honored) on Etsy+Printify clients.

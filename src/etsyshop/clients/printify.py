@@ -8,7 +8,11 @@ from __future__ import annotations
 
 from typing import Any
 
+import time
+
 import httpx
+
+from etsyshop.retry import RETRY_STATUSES, retry_delay
 
 BASE_URL = "https://api.printify.com/v1"
 
@@ -18,10 +22,13 @@ class PrintifyError(RuntimeError):
 
 
 class PrintifyClient:
-    def __init__(self, token: str, shop_id: str | None = None, timeout: float = 30.0):
+    def __init__(self, token: str, shop_id: str | None = None, timeout: float = 30.0,
+                 max_retries: int = 2):
         if not token:
             raise PrintifyError("PRINTIFY_API_TOKEN is not set.")
         self.shop_id = shop_id
+        self._max_retries = max_retries
+        self._sleep = time.sleep  # injectable in tests
         self._http = httpx.Client(
             base_url=BASE_URL,
             timeout=timeout,
@@ -41,7 +48,12 @@ class PrintifyClient:
         self._http.close()
 
     def _request(self, method: str, path: str, **kwargs: Any) -> Any:
-        resp = self._http.request(method, path, **kwargs)
+        for attempt in range(self._max_retries + 1):
+            resp = self._http.request(method, path, **kwargs)
+            if resp.status_code in RETRY_STATUSES and attempt < self._max_retries:
+                self._sleep(retry_delay(resp, attempt))
+                continue
+            break
         if resp.status_code >= 400:
             raise PrintifyError(f"{method} {path} -> {resp.status_code}: {resp.text}")
         if resp.content:
