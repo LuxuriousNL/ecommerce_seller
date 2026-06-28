@@ -365,11 +365,15 @@ def plan_cmd(
     max_niches: int = typer.Option(3, help="How many niches to cover."),
     margin: float = typer.Option(0.40, help="Target net margin."),
     optimize: bool = typer.Option(False, help="Also generate full SEO per concept."),
+    publish: bool = typer.Option(False, help="Publish DIGITAL niche items via Architecture B."),
+    printify_only: bool = typer.Option(False, help="Only POD-fulfillable niches."),
 ) -> None:
     """Build a trend-driven campaign plan: niches -> concepts -> priced listings."""
     from etsyshop.engine import plan_campaign
     from etsyshop.ideate import ideate
+    from etsyshop.store import load_store, published_slugs
 
+    optimize = optimize or publish  # publishing always needs full SEO
     listing_fn = None
     if optimize:
         from etsyshop.models import ProductTemplate
@@ -379,9 +383,11 @@ def plan_cmd(
             tmpl = ProductTemplate(name=concept.product_type, blueprint_id=0, print_provider_id=0)
             return optimize_listing(concept.to_design(), tmpl)
 
+    already = published_slugs(load_store())  # E1.3 dedupe
     plan = plan_campaign(
         ideate, count_per_niche=count, max_niches=max_niches,
         target_margin=margin, listing_fn=listing_fn,
+        printify_only=printify_only, skip_slugs=already,
     )
     console.print(f"Plan for {plan.generated_on} — niches: {', '.join(plan.niches)}\n")
     table = Table("niche", "status", "concept", "price", "in band", "ad-safe floor")
@@ -392,6 +398,48 @@ def plan_cmd(
             f"${i.price.list_price:.2f}", flag, f"${i.price.ad_safe_floor:.2f}",
         )
     console.print(table)
+
+    if publish:
+        _publish_digital_items(plan, already)
+
+
+def _publish_digital_items(plan, already_published: set[str]) -> None:
+    """E1.1: publish digital-niche plan items end-to-end via Architecture B."""
+    from etsyshop.design import create_design
+    from etsyshop.engine import PublishedItem, publish_plan
+    from etsyshop.publisher import draft_for_digital, publish_listing
+    from etsyshop.store import ListingRecord, save_record
+    from etsyshop.trends import load_trends
+
+    niches = {n.slug: n for n in load_trends()}
+    etsy = _etsy()
+
+    def publish_item(item) -> "PublishedItem":  # noqa: ANN001
+        niche = niches.get(item.niche_slug)
+        if not niche or niche.kind != "digital":
+            return PublishedItem(item.concept.slug, item.niche_slug, status="skipped")
+        art = create_design(item.concept.slug, item.concept.design,
+                            product_type=item.concept.product_type, qc=True)
+        if art.status not in ("ready", "manual") or art.path is None:
+            return PublishedItem(item.concept.slug, item.niche_slug, status="error",
+                                 error=f"design {art.status}")
+        draft = draft_for_digital(
+            item.listing, price=item.price.list_price,
+            taxonomy_query=niche.etsy_taxonomy, attributes=niche.etsy_attributes,
+            digital_files=[str(art.path)], image_paths=[str(art.path)],
+        )
+        pub = publish_listing(etsy, draft, activate=False)
+        if pub.listing_id and not pub.error:
+            save_record(ListingRecord(etsy_listing_id=pub.listing_id, slug=item.concept.slug,
+                                      kind="download"))
+        return PublishedItem(item.concept.slug, item.niche_slug,
+                             listing_id=pub.listing_id, status="published" if pub.listing_id else "error",
+                             error=pub.error)
+
+    results = publish_plan(plan, publish_item, skip_slugs=already_published)
+    console.print("\n[bold]Published (digital):[/bold]")
+    for r in results:
+        console.print(f"  {r.slug}: {r.status} {r.listing_id or ''} {r.error or ''}")
 
 
 @app.command("price")

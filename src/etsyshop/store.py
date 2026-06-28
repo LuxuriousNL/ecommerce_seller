@@ -45,3 +45,8 @@ def save_record(record: ListingRecord, path: str | Path = DEFAULT_STORE) -> None
     records = load_store(path)
     records[record.etsy_listing_id] = record
     save_store(records, path)
+
+
+def published_slugs(records: dict[str, ListingRecord]) -> set[str]:
+    """Concept slugs already published — used to dedupe the planner."""
+    return {r.slug for r in records.values() if r.slug}

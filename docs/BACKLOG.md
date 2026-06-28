@@ -8,12 +8,12 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ---
 
 ## Epic 1 — Trend engine → publisher (end-to-end)
-- [ ] **E1.1** As an operator, `plan --publish` turns the campaign plan into live
+- [x] **E1.1** As an operator, `plan --publish` turns the campaign plan into live
   listings: digital niches via the B publisher (`createDraftListing` + file upload),
   POD niches via `publish pod`. _AC: dry-run prints; `--publish` creates; dedupe via store._
-- [ ] **E1.2** Digital-product draft builder (`draft_for_digital`) from concept +
+- [x] **E1.2** Digital-product draft builder (`draft_for_digital`) from concept +
   optimized listing + pricing + niche taxonomy/attributes. _AC: unit-tested._
-- [ ] **E1.3** Plan persistence + dedupe: skip concepts whose slug already in
+- [x] **E1.3** Plan persistence + dedupe: skip concepts whose slug already in
   `.state/listings.json`. _AC: tested._
 
 ## Epic 2 — Image-generation seam
@@ -66,3 +66,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## Iteration log
 - I1: backlog created; Epic 2 (image seam) + E3.1/E3.2 implemented with tests.
+- I2: Epic 1 — draft_for_digital, local-image upload, dedupe, publish_plan + plan --publish wiring.

@@ -51,6 +51,35 @@ def draft_for_pod(
     )
 
 
+def draft_for_digital(
+    listing: OptimizedListing,
+    *,
+    price: float,
+    taxonomy_query: str | None,
+    digital_files: list[str],
+    image_paths: list[str] | None = None,
+    attributes: dict[str, str] | None = None,
+    when_made: str = "made_to_order",
+) -> ListingDraft:
+    """Assemble a digital download listing draft (no Printify, no fulfillment)."""
+    return ListingDraft(
+        title=listing.title,
+        description=listing.description,
+        price=price,
+        quantity=999,
+        listing_type="download",
+        who_made="i_did",
+        when_made=when_made,
+        tags=listing.tags,
+        materials=listing.materials,
+        taxonomy_query=taxonomy_query,
+        attributes=attributes or {},
+        alt_text=listing.title,
+        image_paths=image_paths or [],
+        digital_files=digital_files,
+    )
+
+
 @dataclass
 class PublishResult:
     listing_id: str | None = None
@@ -103,9 +132,21 @@ def publish_listing(
         result.listing_id = listing_id
 
         # 3a. Physical: relay Printify mockups (hero first via image order).
-        for rank, url in enumerate(draft.image_urls, start=1):
+        rank = 0
+        for url in draft.image_urls:
+            rank += 1
             etsy.upload_listing_image(
                 listing_id, fetch(url), rank=rank, alt_text=draft.alt_text, shop_id=shop_id
+            )
+            result.images_uploaded += 1
+
+        # 3a'. Local preview images (e.g. the generated artwork for a digital product).
+        for path in draft.image_paths:
+            rank += 1
+            p = Path(path)
+            etsy.upload_listing_image(
+                listing_id, p.read_bytes(), rank=rank, alt_text=draft.alt_text,
+                filename=p.name, shop_id=shop_id,
             )
             result.images_uploaded += 1
 

@@ -57,6 +57,42 @@ class CampaignPlan:
         return sorted({i.niche_slug for i in self.items})
 
 
+@dataclass
+class PublishedItem:
+    slug: str
+    niche_slug: str
+    listing_id: str | None = None
+    status: str = "published"  # published | skipped | error
+    error: str | None = None
+
+
+PublishItemFn = Callable[["CampaignItem"], PublishedItem]
+
+
+def publish_plan(
+    plan: "CampaignPlan",
+    publish_item_fn: PublishItemFn,
+    *,
+    skip_slugs: set[str] | None = None,
+) -> list[PublishedItem]:
+    """Publish each plan item via the injected publisher, deduping by concept slug."""
+    skip = set(skip_slugs or set())
+    out: list[PublishedItem] = []
+    for item in plan.items:
+        slug = item.concept.slug
+        if slug in skip:
+            out.append(PublishedItem(slug, item.niche_slug, status="skipped"))
+            continue
+        try:
+            res = publish_item_fn(item)
+        except Exception as exc:  # noqa: BLE001
+            res = PublishedItem(slug, item.niche_slug, status="error", error=str(exc))
+        out.append(res)
+        if res.listing_id:
+            skip.add(slug)  # avoid republishing within the same run
+    return out
+
+
 def plan_campaign(
     ideate_fn: IdeateFn,
     *,

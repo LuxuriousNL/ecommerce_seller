@@ -165,5 +165,6 @@ class ListingDraft(BaseModel):
     is_personalizable: bool = False
     shipping_profile_id: int | None = None
     alt_text: str | None = None
-    image_urls: list[str] = Field(default_factory=list)   # Printify mockups to relay
+    image_urls: list[str] = Field(default_factory=list)   # Printify mockups to relay (remote)
+    image_paths: list[str] = Field(default_factory=list)  # local image files to upload
     digital_files: list[str] = Field(default_factory=list)  # local paths (download type)
