@@ -1,0 +1,12 @@
+{
+  "name": "Unisex Cotton Tee",
+  "blueprint_id": 6,
+  "print_provider_id": 99,
+  "variant_ids": [11873, 11874, 11875],
+  "price_cents": 2499,
+  "placements": [
+    { "position": "front", "x": 0.5, "y": 0.45, "scale": 0.9, "angle": 0 }
+  ],
+  "default_tags": ["graphic tee", "unisex shirt", "cotton tshirt"],
+  "description_prefix": "Soft, comfortable unisex cotton tee. Printed on demand just for you."
+}

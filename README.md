@@ -59,6 +59,53 @@ etsyshop connect-test
 
 You should see green OK lines for both Printify and Etsy.
 
+## Usage
+
+### Phase 1 — build a product template, then bulk-create
+
+Templates reference Printify catalog ids. Discover them, then edit
+`templates/tshirt.example.json` (the ids in it are placeholders):
+
+```bash
+etsyshop catalog blueprints --search "tee"     # find a blueprint_id
+etsyshop catalog providers 6                   # print providers for that blueprint
+etsyshop catalog variants 6 99                 # variant ids (sizes/colors)
+```
+
+Point a design manifest at your artwork (`designs/manifest.example.json` shows
+both local `image_path` and remote `image_url`), then create products:
+
+```bash
+# Create drafts in Printify (no Etsy publish yet)
+etsyshop products create --template templates/tshirt.example.json \
+                         --manifest designs/manifest.example.json
+
+# Create AND publish to Etsy, with AI-optimized listings (Phases 1+2)
+etsyshop products create --template templates/tshirt.example.json \
+                         --manifest designs/manifest.example.json \
+                         --optimize --publish
+```
+
+### Phase 2 — preview AI listing optimization
+
+Requires `ANTHROPIC_API_KEY`. Generates an Etsy-compliant title (≤140 chars), 13
+tags (≤20 chars each), description, and materials for one design — no writes:
+
+```bash
+etsyshop optimize --template templates/tshirt.example.json \
+                  --manifest designs/manifest.example.json \
+                  --slug retro-sunset-surf
+```
+
+### Phase 3 — monitor orders
+
+Printify auto-fulfills synced Etsy orders; this reconciles both sides and flags
+anything stuck or unmatched:
+
+```bash
+etsyshop orders status
+```
+
 ## Notes on credentials & safety
 
 - `.env` and `.tokens.json` are git-ignored. Never commit them.

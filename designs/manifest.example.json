@@ -1,0 +1,20 @@
+{
+  "designs": [
+    {
+      "slug": "retro-sunset-surf",
+      "image_path": "designs/art/retro-sunset-surf.png",
+      "title_hint": "Retro sunset surf graphic",
+      "theme": "70s retro surf, warm sunset palette",
+      "niche": "surfers and beach lovers",
+      "keywords": ["retro surf", "sunset", "vintage beach", "California"]
+    },
+    {
+      "slug": "mountain-line-art",
+      "image_url": "https://example.com/art/mountain-line-art.png",
+      "title_hint": "Minimalist mountain line art",
+      "theme": "minimalist single-line mountains",
+      "niche": "hikers and outdoor enthusiasts",
+      "keywords": ["mountain", "line art", "minimalist", "hiking"]
+    }
+  ]
+}
