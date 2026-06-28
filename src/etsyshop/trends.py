@@ -38,6 +38,9 @@ class TrendNiche(BaseModel):
     keywords: list[str] = Field(default_factory=list)
     micro_positioning: list[str] = Field(default_factory=list)
     why: str = ""
+    # Etsy enrichment hints (the fields Printify's sync can't set).
+    etsy_taxonomy: str | None = None
+    etsy_attributes: dict[str, str] = Field(default_factory=dict)
 
     def status(self, month: int) -> str:
         """peak / build / upcoming / off for the given month (1-12)."""

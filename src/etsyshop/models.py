@@ -37,6 +37,10 @@ class ProductTemplate(BaseModel):
     product_cost: float | None = None
     target_margin: float | None = None
     fee_country: str = "US"
+    # Optional Etsy-enrichment hints applied after publish (category + attributes).
+    materials: list[str] = Field(default_factory=list)
+    etsy_taxonomy: str | None = None
+    etsy_attributes: dict[str, str] = Field(default_factory=dict)
 
     @classmethod
     def load(cls, path: str | Path) -> "ProductTemplate":

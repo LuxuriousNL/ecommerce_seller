@@ -192,3 +192,68 @@ class EtsyClient:
         """Orders. Etsy models an order as a 'receipt'."""
         sid = shop_id or self.shop_id
         return self._request("GET", f"/application/shops/{sid}/receipts", params=params)
+
+    # --- Listing enrichment (the fields Printify's Etsy sync does NOT set) ---
+    def get_listing(self, listing_id: int | str) -> dict:
+        return self._request("GET", f"/application/listings/{listing_id}")
+
+    def get_seller_taxonomy_nodes(self) -> dict:
+        """Etsy's category tree. Used to resolve a taxonomy_id (the Etsy category)."""
+        return self._request("GET", "/application/seller-taxonomy/nodes")
+
+    def get_taxonomy_properties(self, taxonomy_id: int) -> dict:
+        """The attributes (and their valid values) a given category supports."""
+        return self._request(
+            "GET", f"/application/seller-taxonomy/nodes/{taxonomy_id}/properties"
+        )
+
+    def get_listing_properties(self, listing_id: int | str, shop_id: str | None = None) -> dict:
+        sid = shop_id or self.shop_id
+        return self._request(
+            "GET", f"/application/shops/{sid}/listings/{listing_id}/properties"
+        )
+
+    def update_listing(
+        self,
+        listing_id: int | str,
+        *,
+        shop_id: str | None = None,
+        taxonomy_id: int | None = None,
+        tags: list[str] | None = None,
+        materials: list[str] | None = None,
+        **extra: Any,
+    ) -> dict:
+        """Set category / tags / materials on an existing listing (PATCH, form-encoded)."""
+        sid = shop_id or self.shop_id
+        data: dict[str, Any] = {}
+        if taxonomy_id is not None:
+            data["taxonomy_id"] = taxonomy_id
+        if tags is not None:
+            data["tags"] = tags  # httpx encodes a list as repeated form keys
+        if materials is not None:
+            data["materials"] = materials
+        data.update(extra)
+        return self._request(
+            "PATCH", f"/application/shops/{sid}/listings/{listing_id}", data=data
+        )
+
+    def update_listing_property(
+        self,
+        listing_id: int | str,
+        property_id: int,
+        *,
+        value_ids: list[int],
+        values: list[str],
+        scale_id: int | None = None,
+        shop_id: str | None = None,
+    ) -> dict:
+        """Set an attribute (e.g. Occasion=Christmas) on a listing (PUT, form-encoded)."""
+        sid = shop_id or self.shop_id
+        data: dict[str, Any] = {"value_ids": value_ids, "values": values}
+        if scale_id is not None:
+            data["scale_id"] = scale_id
+        return self._request(
+            "PUT",
+            f"/application/shops/{sid}/listings/{listing_id}/properties/{property_id}",
+            data=data,
+        )

@@ -94,6 +94,11 @@ class PrintifyClient:
     def list_products(self, shop_id: str | None = None) -> dict:
         return self._request("GET", f"/shops/{self._shop(shop_id)}/products.json")
 
+    def get_product(self, product_id: str, shop_id: str | None = None) -> dict:
+        return self._request(
+            "GET", f"/shops/{self._shop(shop_id)}/products/{product_id}.json"
+        )
+
     def create_product(self, payload: dict, shop_id: str | None = None) -> dict:
         return self._request(
             "POST", f"/shops/{self._shop(shop_id)}/products.json", json=payload

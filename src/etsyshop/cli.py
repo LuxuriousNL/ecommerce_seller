@@ -18,11 +18,13 @@ etsy_app = typer.Typer(help="Etsy commands.")
 catalog_app = typer.Typer(help="Browse Printify's catalog to build product templates.")
 products_app = typer.Typer(help="Create and publish products.")
 orders_app = typer.Typer(help="Order operations.")
+listing_app = typer.Typer(help="Enrich Etsy listings beyond what Printify can set.")
 app.add_typer(printify_app, name="printify")
 app.add_typer(etsy_app, name="etsy")
 app.add_typer(catalog_app, name="catalog")
 app.add_typer(products_app, name="products")
 app.add_typer(orders_app, name="orders")
+app.add_typer(listing_app, name="listing")
 console = Console()
 
 
@@ -104,8 +106,9 @@ def products_create(
     manifest: str = typer.Option(..., help="Path to a design manifest JSON."),
     optimize: bool = typer.Option(False, help="Generate AI SEO before creating (Phase 2)."),
     publish: bool = typer.Option(False, help="Publish to Etsy after creating."),
+    enrich: bool = typer.Option(False, help="After publish, set Etsy category + attributes."),
 ) -> None:
-    """Upload designs, create Printify products, and optionally publish to Etsy."""
+    """Upload designs, create Printify products, and optionally publish + enrich on Etsy."""
     tmpl = ProductTemplate.load(template)
     designs = DesignManifest.load(manifest).designs
 
@@ -116,18 +119,39 @@ def products_create(
         def listing_fn(design):  # noqa: ANN001
             return optimize_listing(design, tmpl)
 
-    table = Table("design", "product_id", "published", "error")
+    etsy = _etsy() if enrich else None
+    table = Table("design", "product_id", "published", "etsy listing", "error")
     with _printify() as p:
         for design in designs:
             listing = listing_fn(design) if listing_fn else None
             result = create_design_product(p, tmpl, design, listing=listing, publish=publish)
+            etsy_note = "-"
+            if enrich and result.published and result.product_id:
+                etsy_note = _enrich_published(p, etsy, result.product_id, tmpl, listing)
             table.add_row(
-                result.slug,
-                result.product_id or "-",
-                "yes" if result.published else "no",
-                result.error or "",
+                result.slug, result.product_id or "-",
+                "yes" if result.published else "no", etsy_note, result.error or "",
             )
     console.print(table)
+
+
+def _enrich_published(printify, etsy, product_id, tmpl, listing) -> str:
+    """Best-effort: resolve the published Etsy listing id and apply category/attributes."""
+    from etsyshop.enrich import enrich_listing, wait_for_etsy_listing_id
+
+    listing_id = wait_for_etsy_listing_id(printify, product_id)
+    if not listing_id:
+        return "pending"
+    report = enrich_listing(
+        etsy, listing_id,
+        taxonomy_query=tmpl.etsy_taxonomy,
+        tags=(listing.tags if listing else tmpl.default_tags) or None,
+        materials=(listing.materials if listing else tmpl.materials) or None,
+        attributes=tmpl.etsy_attributes or None,
+    )
+    if report.error:
+        return f"err: {report.error[:20]}"
+    return f"{listing_id} (cat {report.taxonomy_id})" if report.taxonomy_id else listing_id
 
 
 # --- Phase 2: preview AI optimization for a single design ---
@@ -170,6 +194,57 @@ def orders_status() -> None:
     for issue in report.issues:
         table.add_row(issue.source, issue.order_id, issue.reason, issue.detail)
     console.print(table)
+
+
+# --- Listing enrichment: set Etsy category + attributes Printify can't ---
+@listing_app.command("taxonomy")
+def listing_taxonomy(search: str = typer.Option(..., help="Category name to resolve.")) -> None:
+    """Resolve an Etsy category name to its taxonomy_id."""
+    from etsyshop.taxonomy import resolve_taxonomy_id
+
+    match = resolve_taxonomy_id(_etsy().get_seller_taxonomy_nodes(), search)
+    if match:
+        console.print(f"[green]{match.taxonomy_id}[/green] — {match.full_path}")
+    else:
+        console.print(f"[yellow]No category matched '{search}'.[/yellow]")
+
+
+@listing_app.command("enrich")
+def listing_enrich(
+    listing_id: str = typer.Option(..., help="Etsy listing id (from the published product)."),
+    taxonomy: str = typer.Option("", help="Etsy category name, e.g. 'Ornaments'."),
+    tag: list[str] = typer.Option(None, help="Repeatable: --tag a --tag b (max 13)."),
+    material: list[str] = typer.Option(None, help="Repeatable material term."),
+    attr: list[str] = typer.Option(None, help="Repeatable attribute 'Name=Value', e.g. Occasion=Christmas."),
+) -> None:
+    """Apply category, tags, materials, and attributes to a published Etsy listing."""
+    from etsyshop.enrich import enrich_listing
+
+    attributes = {}
+    for item in attr or []:
+        if "=" not in item:
+            raise typer.BadParameter(f"--attr must be Name=Value, got '{item}'")
+        k, v = item.split("=", 1)
+        attributes[k.strip()] = v.strip()
+
+    report = enrich_listing(
+        _etsy(), listing_id,
+        taxonomy_query=taxonomy or None,
+        tags=(tag or None),
+        materials=(material or None),
+        attributes=attributes or None,
+    )
+    if report.error:
+        console.print(f"[red]FAIL[/red] - {report.error}")
+        raise typer.Exit(1)
+    if report.taxonomy_id:
+        console.print(f"[green]category[/green] {report.taxonomy_id} ({report.taxonomy_path})")
+    if report.applied_attributes:
+        console.print(f"[green]attributes[/green] {', '.join(report.applied_attributes)}")
+    if report.skipped_attributes:
+        console.print(f"[yellow]skipped[/yellow] {', '.join(report.skipped_attributes)} "
+                      "(not valid for this category)")
+    console.print("Done.")
 
 
 # --- Trend engine: traverse niches -> concepts -> pricing ---

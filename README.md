@@ -127,6 +127,30 @@ regulatory fees. It returns a list price (charm/prestige rounding), break-even,
 report's worked examples in `tests/test_pricing.py`. Product templates can carry
 `product_cost` + `target_margin` to price automatically instead of a constant.
 
+### Etsy listing enrichment (overcoming Printify's SEO gap)
+
+Printify's Etsy sync only sets title/description/tags/price/images — it leaves
+the **category** and **attributes** (occasion, holiday, recipient, materials)
+unset, which are exactly what Etsy search uses for query matching. We fill them
+via the Etsy API *after* publish; they persist because Printify never re-syncs
+those fields.
+
+```bash
+etsyshop listing taxonomy --search "Ornaments"        # resolve an Etsy category id
+etsyshop listing enrich --listing-id 1234567890 \
+    --taxonomy "Ornaments" \
+    --tag "custom name ornament" --tag "family ornament" \
+    --material ceramic \
+    --attr Occasion=Christmas --attr Holiday=Christmas
+```
+
+Or end-to-end — `products create --publish --enrich` resolves the published
+listing id from Printify and applies the template's `etsy_taxonomy` /
+`etsy_attributes` / `materials` automatically. The niche catalog already carries
+seasonal attribute hints (e.g. ornaments → Occasion/Holiday = Christmas).
+Attribute values are validated against the category's allowed set; anything
+invalid is reported as skipped rather than failing the listing.
+
 ### Phase 4 — web dashboard
 
 A FastAPI control plane over the same logic, with a connections panel, product
