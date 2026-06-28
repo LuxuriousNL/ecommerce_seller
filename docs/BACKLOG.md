@@ -39,11 +39,11 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 > rate-limit; cache; no aggressive scraping. Pluggable sources.
 - [x] **E4.1** Subproject scaffold `trendscanner/` (own package, shared venv):
   `TrendSignal` model (source, term, category, score, observed_at, url).
-- [ ] **E4.2** RSS/news source adapter (fashion/gifting/news feeds) → signals.
+- [x] **E4.2** RSS/news source adapter (fashion/gifting/news feeds) → signals.
 - [ ] **E4.3** Google Trends adapter (pytrends or public endpoint) → signals.
 - [ ] **E4.4** Ecommerce "new/bestseller" adapter (sitemap/JSON-LD, robots-aware).
-- [ ] **E4.5** Aggregator: normalize + dedupe + score signals into a feed file.
-- [ ] **E4.6** Bridge into etsyshop: map signals → niche keywords / new niche
+- [x] **E4.5** Aggregator: normalize + dedupe + score signals into a feed file.
+- [x] **E4.6** Bridge into etsyshop: map signals → niche keywords / new niche
   candidates; `trends --signals` surfaces emerging terms. _AC: tested with fixtures._
 
 ## Epic 5 — Improvements (brought in)
@@ -68,3 +68,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - I1: backlog created; Epic 2 (image seam) + E3.1/E3.2 implemented with tests.
 - I2: Epic 1 — draft_for_digital, local-image upload, dedupe, publish_plan + plan --publish wiring.
 - I3: E3.3 B smoke-test harness (create->readback->diff->delete); E4.1 trendscanner subproject scaffold + TrendSignal.
+- I4: trendscanner vertical — RSS source (parse+robots-aware fetch), aggregator (ngram frequency), etsyshop bridge (match+emerging). E4.3/E4.4 sources next.
