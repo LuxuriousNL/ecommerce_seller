@@ -40,8 +40,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] **E4.1** Subproject scaffold `trendscanner/` (own package, shared venv):
   `TrendSignal` model (source, term, category, score, observed_at, url).
 - [x] **E4.2** RSS/news source adapter (fashion/gifting/news feeds) → signals.
-- [ ] **E4.3** Google Trends adapter (pytrends or public endpoint) → signals.
-- [ ] **E4.4** Ecommerce "new/bestseller" adapter (sitemap/JSON-LD, robots-aware).
+- [x] **E4.3** Google Trends adapter (pytrends or public endpoint) → signals.
+- [x] **E4.4** Ecommerce "new/bestseller" adapter (sitemap/JSON-LD, robots-aware).
 - [x] **E4.5** Aggregator: normalize + dedupe + score signals into a feed file.
 - [x] **E4.6** Bridge into etsyshop: map signals → niche keywords / new niche
   candidates; `trends --signals` surfaces emerging terms. _AC: tested with fixtures._
@@ -69,3 +69,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - I2: Epic 1 — draft_for_digital, local-image upload, dedupe, publish_plan + plan --publish wiring.
 - I3: E3.3 B smoke-test harness (create->readback->diff->delete); E4.1 trendscanner subproject scaffold + TrendSignal.
 - I4: trendscanner vertical — RSS source (parse+robots-aware fetch), aggregator (ngram frequency), etsyshop bridge (match+emerging). E4.3/E4.4 sources next.
+- I5: trendscanner sources complete — Google Trends (official RSS) + ecommerce (JSON-LD, robots-aware) + scan runner/CLI (trendscan) writing a feed file. Epic 4 done.
