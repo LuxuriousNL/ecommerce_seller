@@ -106,6 +106,30 @@ anything stuck or unmatched:
 etsyshop orders status
 ```
 
+### Phase 4 — web dashboard
+
+A FastAPI control plane over the same logic, with a connections panel, product
+list, order reconciliation, and an interactive AI optimizer.
+
+```bash
+pip install -e '.[dashboard]'
+etsyshop dashboard            # http://127.0.0.1:8000
+```
+
+## Development & tests
+
+The suite mocks the HTTP clients (and Claude), so it runs offline with no
+credentials:
+
+```bash
+pip install -e '.[dev,dashboard]'
+pytest -q
+```
+
+Coverage: payload building, Etsy-limit normalization, the create/publish
+pipeline (happy + error paths), order reconciliation, the Printify/Etsy HTTP
+clients (via `httpx` mock transport), and the dashboard API.
+
 ## Notes on credentials & safety
 
 - `.env` and `.tokens.json` are git-ignored. Never commit them.

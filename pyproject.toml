@@ -18,6 +18,7 @@ etsyshop = "etsyshop.cli:app"
 
 [project.optional-dependencies]
 dev = ["ruff>=0.5", "pytest>=8.0"]
+dashboard = ["fastapi>=0.110", "uvicorn>=0.29"]
 
 [build-system]
 requires = ["hatchling"]

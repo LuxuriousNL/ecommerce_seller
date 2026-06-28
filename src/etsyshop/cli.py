@@ -172,6 +172,25 @@ def orders_status() -> None:
     console.print(table)
 
 
+# --- Phase 4: web dashboard ---
+@app.command("dashboard")
+def dashboard(
+    host: str = typer.Option("127.0.0.1", help="Bind address."),
+    port: int = typer.Option(8000, help="Port."),
+) -> None:
+    """Launch the web dashboard (requires the 'dashboard' extra)."""
+    try:
+        import uvicorn
+    except ImportError as exc:
+        raise typer.BadParameter(
+            "Dashboard deps missing. Install with: pip install -e '.[dashboard]'"
+        ) from exc
+    from etsyshop.dashboard.app import create_app
+
+    console.print(f"Dashboard at http://{host}:{port}")
+    uvicorn.run(create_app(), host=host, port=port)
+
+
 @app.command("connect-test")
 def connect_test() -> None:
     """Verify Printify + Etsy credentials are wired up correctly."""
