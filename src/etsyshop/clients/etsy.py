@@ -356,3 +356,6 @@ class EtsyClient:
     def get_shipping_profiles(self, shop_id: str | None = None) -> dict:
         sid = shop_id or self.shop_id
         return self._request("GET", f"/application/shops/{sid}/shipping-profiles")
+
+    def delete_listing(self, listing_id: int | str) -> Any:
+        return self._request("DELETE", f"/application/listings/{listing_id}")

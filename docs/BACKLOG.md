@@ -30,14 +30,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   with mocked Anthropic client._
 - [x] **E3.2** `design` orchestrator: brief → generate → QC → save artifact +
   CLI `design`. _AC: manual/ready/qc_failed/error paths tested._
-- [ ] **E3.3** B live-smoke-test harness: a guarded script that, given real creds,
+- [x] **E3.3** B live-smoke-test harness: a guarded script that, given real creds,
   creates ONE draft listing (no activate) and reports field-by-field what stuck —
   the manual confirmation step for the unverified Etsy write calls.
 
 ## Epic 4 — trendscanner subproject (separate package)
 > Ethics: respect robots.txt + site ToS; prefer official APIs + RSS + sitemaps;
 > rate-limit; cache; no aggressive scraping. Pluggable sources.
-- [ ] **E4.1** Subproject scaffold `trendscanner/` (own package, shared venv):
+- [x] **E4.1** Subproject scaffold `trendscanner/` (own package, shared venv):
   `TrendSignal` model (source, term, category, score, observed_at, url).
 - [ ] **E4.2** RSS/news source adapter (fashion/gifting/news feeds) → signals.
 - [ ] **E4.3** Google Trends adapter (pytrends or public endpoint) → signals.
@@ -67,3 +67,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ## Iteration log
 - I1: backlog created; Epic 2 (image seam) + E3.1/E3.2 implemented with tests.
 - I2: Epic 1 — draft_for_digital, local-image upload, dedupe, publish_plan + plan --publish wiring.
+- I3: E3.3 B smoke-test harness (create->readback->diff->delete); E4.1 trendscanner subproject scaffold + TrendSignal.

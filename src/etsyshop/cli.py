@@ -461,6 +461,31 @@ def price_cmd(
     console.print(f"Max safe discount: {rec.max_safe_discount*100:.0f}%")
 
 
+# --- Architecture B live smoke test ---
+@app.command("smoke")
+def smoke_cmd(
+    taxonomy: str = typer.Option("Ornaments", help="Category to test."),
+    keep: bool = typer.Option(False, help="Don't delete the draft afterward."),
+    yes: bool = typer.Option(False, "--yes", help="Skip the confirmation prompt."),
+) -> None:
+    """Create ONE real draft listing, verify what stuck, then delete it (Architecture B)."""
+    from etsyshop.smoketest import smoke_test_b
+
+    if not yes:
+        typer.confirm("This creates a real (draft) Etsy listing. Continue?", abort=True)
+    report = smoke_test_b(_etsy(), taxonomy_query=taxonomy, cleanup=not keep)
+    if report.error:
+        console.print(f"[red]FAIL[/red] - {report.error}")
+        raise typer.Exit(1)
+    console.print(f"Draft listing {report.listing_id} "
+                  f"({'deleted' if report.cleaned_up else 'kept'}):")
+    for c in report.checks:
+        mark = "[green]OK[/green]" if c.ok else "[red]MISMATCH[/red]"
+        console.print(f"  {mark} {c.field}: sent={c.sent!r} got={c.got!r}")
+    console.print("[green]All fields stuck.[/green]" if report.all_ok
+                  else "[yellow]Some fields didn't stick — see above.[/yellow]")
+
+
 # --- Image generation seam ---
 @app.command("design")
 def design_cmd(
