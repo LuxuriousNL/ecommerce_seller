@@ -25,8 +25,9 @@ def build_product_payload(
     tags = listing.tags if listing else template.default_tags
     description = listing.description if listing else template.description_prefix
 
+    price_cents = template.resolve_price_cents()
     variants = [
-        {"id": vid, "price": template.price_cents, "is_enabled": True}
+        {"id": vid, "price": price_cents, "is_enabled": True}
         for vid in template.variant_ids
     ]
 

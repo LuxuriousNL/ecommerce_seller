@@ -33,10 +33,28 @@ class ProductTemplate(BaseModel):
     placements: list[ImagePlacement] = Field(default_factory=lambda: [ImagePlacement()])
     default_tags: list[str] = Field(default_factory=list)
     description_prefix: str = ""
+    # Optional: when both are set, the price is computed by the fee-aware engine.
+    product_cost: float | None = None
+    target_margin: float | None = None
+    fee_country: str = "US"
 
     @classmethod
     def load(cls, path: str | Path) -> "ProductTemplate":
         return cls.model_validate_json(Path(path).read_text())
+
+    def resolve_price_cents(self) -> int:
+        """Computed price when product_cost + target_margin are set; else the constant."""
+        if self.product_cost is not None and self.target_margin is not None:
+            from etsyshop.pricing import SCHEDULES, US, CostInputs, recommend_price
+
+            fees = SCHEDULES.get(self.fee_country, US)
+            rec = recommend_price(
+                CostInputs(product_cost=self.product_cost),
+                fees,
+                target_margin=self.target_margin,
+            )
+            return round(rec.list_price * 100)
+        return self.price_cents
 
 
 class Design(BaseModel):
@@ -60,6 +78,55 @@ class DesignManifest(BaseModel):
         if isinstance(data, list):
             data = {"designs": data}
         return cls.model_validate(data)
+
+
+class DesignBrief(BaseModel):
+    """Structured brief for an image model (Subject+Style+Context, report 2)."""
+
+    subject: str
+    style: str
+    palette: str
+    composition: str = ""
+    must_include: list[str] = Field(default_factory=list)
+    avoid: list[str] = Field(default_factory=list)
+    aspect_ratio: str = "4:5"
+
+    def to_prompt(self) -> str:
+        lines = [
+            f"Subject: {self.subject}",
+            f"Style/medium: {self.style}",
+            f"Palette: {self.palette}",
+        ]
+        if self.composition:
+            lines.append(f"Composition: {self.composition}")
+        if self.must_include:
+            lines.append(f"Must include: {', '.join(self.must_include)}")
+        avoid = list(self.avoid) + ["text", "watermark", "logo", "signature"]
+        lines.append(f"Avoid: {', '.join(dict.fromkeys(avoid))}")
+        lines.append(f"Aspect ratio: {self.aspect_ratio}")
+        return "\n".join(lines)
+
+
+class ProductConcept(BaseModel):
+    """A trend-derived idea ready to flow through design -> listing -> pricing."""
+
+    slug: str
+    product_type: str
+    niche_slug: str
+    micro_positioning: str = ""
+    title_hint: str = ""
+    seed_keywords: list[str] = Field(default_factory=list)
+    design: DesignBrief
+
+    def to_design(self) -> "Design":
+        theme = f"{self.design.subject}; {self.design.style}".strip("; ")
+        return Design(
+            slug=self.slug,
+            title_hint=self.title_hint,
+            theme=theme,
+            niche=self.micro_positioning,
+            keywords=self.seed_keywords,
+        )
 
 
 class OptimizedListing(BaseModel):

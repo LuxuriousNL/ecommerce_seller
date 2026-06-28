@@ -23,12 +23,17 @@ not keyword-stuffed. No ALL CAPS, no emoji.
 - tags: EXACTLY 13 tags. Each tag <=20 characters. Multi-word long-tail phrases \
 (e.g. "retro sunset shirt"), lowercase, no punctuation, no duplicates, no single \
 words that already appear as another tag's substring. Mix broad and niche.
-- description: 2-4 short paragraphs. Open with a compelling hook that repeats the \
-primary keyword, then product details, then a light call to action. Plain text.
+- description: follow this architecture in plain text, short paragraphs:
+  1) What it is + who it's for (first sentence repeats the primary keyword);
+  2) What's included / key product details and specs;
+  3) AI-use disclosure line, EXACTLY: "Design note: created from my original \
+concept and prompts in AI tools, then refined and prepared by me for sale.";
+  4) A light call to action.
 - materials: up to 13 short material/keyword terms relevant to the product.
 
 Base every choice on the design theme, the buyer's likely search intent, and the \
-product type. Do not invent product specs you weren't given."""
+product type. Do not invent product specs you weren't given. Etsy requires \
+disclosure of AI involvement, so always include the design-note line verbatim."""
 
 
 def _build_user_prompt(design: Design, template: ProductTemplate) -> str:

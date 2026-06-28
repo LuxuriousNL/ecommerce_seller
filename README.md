@@ -106,6 +106,27 @@ anything stuck or unmatched:
 etsyshop orders status
 ```
 
+### Trend engine — traverse niches, price properly
+
+The engine encodes a ranked, **seasonal** niche catalog (`data/trends.json`) and a
+**fee-aware pricing engine** (Etsy's real fee stack), then composes
+trend → concept → priced listing.
+
+```bash
+etsyshop trends                       # what's in season now (peak > build > upcoming)
+etsyshop trends --kind digital        # filter by fulfilment type
+etsyshop ideate --niche halloween-svg --count 3   # IP-safe concepts (Claude)
+etsyshop plan --count 2 --max-niches 3 --margin 0.40   # full campaign plan
+etsyshop price --product-cost 5 --margin 0.45 --country US   # fee-aware price
+```
+
+The pricing engine models the $0.20 listing fee, 6.5% transaction fee,
+country payment processing (US/UK/NL/FR), Offsite Ads (12/15%, capped $100), and
+regulatory fees. It returns a list price (charm/prestige rounding), break-even,
+**ad-safe floor**, and max safe discount — validated against the research
+report's worked examples in `tests/test_pricing.py`. Product templates can carry
+`product_cost` + `target_margin` to price automatically instead of a constant.
+
 ### Phase 4 — web dashboard
 
 A FastAPI control plane over the same logic, with a connections panel, product

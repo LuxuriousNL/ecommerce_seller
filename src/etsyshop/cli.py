@@ -172,6 +172,101 @@ def orders_status() -> None:
     console.print(table)
 
 
+# --- Trend engine: traverse niches -> concepts -> pricing ---
+@app.command("trends")
+def trends_cmd(
+    printify_only: bool = typer.Option(True, help="Only POD-fulfillable niches."),
+    kind: str = typer.Option("", help="Filter: pod | digital | physical."),
+) -> None:
+    """Show which niches are in season right now (peak > build > upcoming)."""
+    from etsyshop.trends import trending_now
+
+    scored = trending_now(printify_only=printify_only, kind=kind or None)
+    table = Table("status", "niche", "kind", "price band", "margin", "why")
+    for s in scored:
+        n = s.niche
+        table.add_row(
+            s.status, n.name, n.kind, f"${n.price_low:g}-${n.price_high:g}",
+            f"{int(n.margin_low * 100)}-{int(n.margin_high * 100)}%", n.why,
+        )
+    console.print(table)
+    if not scored:
+        console.print("[yellow]Nothing in season for this filter.[/yellow]")
+
+
+@app.command("ideate")
+def ideate_cmd(
+    niche: str = typer.Option(..., help="Niche slug (see `etsyshop trends`)."),
+    count: int = typer.Option(3, help="Number of concepts."),
+) -> None:
+    """Generate IP-safe product concepts for a niche (calls Claude)."""
+    from etsyshop.ideate import ideate
+    from etsyshop.trends import load_trends
+
+    n = next((x for x in load_trends() if x.slug == niche), None)
+    if n is None:
+        raise typer.BadParameter(f"Unknown niche '{niche}'. Try `etsyshop trends`.")
+    for c in ideate(n, count):
+        console.print(f"[bold]{c.slug}[/bold] — {c.product_type} | {c.micro_positioning}")
+        console.print(f"  title: {c.title_hint}")
+        console.print(f"  design: {c.design.subject} / {c.design.style} / {c.design.palette}")
+        console.print(f"  keywords: {', '.join(c.seed_keywords)}\n")
+
+
+@app.command("plan")
+def plan_cmd(
+    count: int = typer.Option(2, help="Concepts per niche."),
+    max_niches: int = typer.Option(3, help="How many niches to cover."),
+    margin: float = typer.Option(0.40, help="Target net margin."),
+    optimize: bool = typer.Option(False, help="Also generate full SEO per concept."),
+) -> None:
+    """Build a trend-driven campaign plan: niches -> concepts -> priced listings."""
+    from etsyshop.engine import plan_campaign
+    from etsyshop.ideate import ideate
+
+    listing_fn = None
+    if optimize:
+        from etsyshop.models import ProductTemplate
+        from etsyshop.optimize import optimize_listing
+
+        def listing_fn(concept):  # noqa: ANN001
+            tmpl = ProductTemplate(name=concept.product_type, blueprint_id=0, print_provider_id=0)
+            return optimize_listing(concept.to_design(), tmpl)
+
+    plan = plan_campaign(
+        ideate, count_per_niche=count, max_niches=max_niches,
+        target_margin=margin, listing_fn=listing_fn,
+    )
+    console.print(f"Plan for {plan.generated_on} — niches: {', '.join(plan.niches)}\n")
+    table = Table("niche", "status", "concept", "price", "in band", "ad-safe floor")
+    for i in plan.items:
+        flag = "[green]yes[/green]" if i.in_market_band else "[yellow]no[/yellow]"
+        table.add_row(
+            i.niche_slug, i.status, i.concept.slug,
+            f"${i.price.list_price:.2f}", flag, f"${i.price.ad_safe_floor:.2f}",
+        )
+    console.print(table)
+
+
+@app.command("price")
+def price_cmd(
+    product_cost: float = typer.Option(..., help="POD base cost (your COGS)."),
+    margin: float = typer.Option(0.40, help="Target net margin."),
+    country: str = typer.Option("US", help="Fee schedule: US | UK | NL | FR."),
+) -> None:
+    """Fee-aware price recommendation for a single product cost."""
+    from etsyshop.pricing import SCHEDULES, US, CostInputs, recommend_price
+
+    fees = SCHEDULES.get(country.upper(), US)
+    rec = recommend_price(CostInputs(product_cost=product_cost), fees, target_margin=margin)
+    b = rec.breakdown
+    console.print(f"List price: [bold]{b.currency} {rec.list_price:.2f}[/bold] "
+                  f"(raw {rec.raw_price:.2f}, {rec.rounding})")
+    console.print(f"Net profit: {b.net_profit:.2f} | net margin: {b.net_margin*100:.1f}%")
+    console.print(f"Break-even: {rec.break_even:.2f} | ad-safe floor: {rec.ad_safe_floor:.2f}")
+    console.print(f"Max safe discount: {rec.max_safe_discount*100:.0f}%")
+
+
 # --- Phase 4: web dashboard ---
 @app.command("dashboard")
 def dashboard(
