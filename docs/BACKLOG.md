@@ -52,8 +52,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   (10/s, 10k/day) and Printify (200/30min publish). _AC: tested._
 - [ ] **E5.3** Multi-variant Etsy listings in B (`updateListingInventory`) +
   variant_map population for accurate fulfillment routing.
-- [ ] **E5.4** Shipping-profile + return-policy auto-resolution before activate.
-- [ ] **E5.5** Winner tracking: read orders, rank listings, feed back into the
+- [x] **E5.4** Shipping-profile + return-policy auto-resolution before activate.
+- [x] **E5.5** Winner tracking: read orders, rank listings, feed back into the
   planner to double down on sellers.
 - [ ] **E5.6** Print-standard normalization (300 DPI, sRGB, PNG/transparent) via
   optional Pillow extra.
@@ -71,3 +71,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - I4: trendscanner vertical — RSS source (parse+robots-aware fetch), aggregator (ngram frequency), etsyshop bridge (match+emerging). E4.3/E4.4 sources next.
 - I5: trendscanner sources complete — Google Trends (official RSS) + ecommerce (JSON-LD, robots-aware) + scan runner/CLI (trendscan) writing a feed file. Epic 4 done.
 - I6: E5.1 real Printify variant cost (min enabled, used in publish pod repricing); E5.2 retry+backoff (Retry-After honored) on Etsy+Printify clients.
+- I7: E5.4 auto-resolve shipping profile + return policy before physical activate (best-effort); E5.5 winner tracking (rank listings by units+revenue) + 'winners' CLI.

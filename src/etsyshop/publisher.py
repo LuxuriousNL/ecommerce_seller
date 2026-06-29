@@ -99,6 +99,7 @@ def publish_listing(
     shop_id: str | None = None,
     activate: bool = True,
     fetch: FetchFn = _default_fetch,
+    auto_resolve_physical: bool = True,
 ) -> PublishResult:
     """Create an Etsy listing from a draft: category, listing, media, attributes, activate."""
     result = PublishResult()
@@ -112,6 +113,22 @@ def publish_listing(
             raise ValueError(f"Could not resolve Etsy category for '{draft.taxonomy_query}'.")
         result.taxonomy_id = taxonomy_id
 
+        # 1b. Physical listings need a shipping profile (and a return policy) to
+        # activate — resolve the shop's defaults if not supplied. Best-effort.
+        shipping_id = draft.shipping_profile_id
+        return_policy_id = None
+        if draft.listing_type == "physical" and auto_resolve_physical:
+            try:
+                from etsyshop.shopconfig import (
+                    resolve_return_policy_id,
+                    resolve_shipping_profile_id,
+                )
+
+                shipping_id = shipping_id or resolve_shipping_profile_id(etsy, shop_id)
+                return_policy_id = resolve_return_policy_id(etsy, shop_id)
+            except Exception:  # noqa: BLE001 — proceed; activation will report if missing
+                pass
+
         # 2. Create the draft listing.
         listing = etsy.create_draft_listing(
             title=draft.title,
@@ -124,7 +141,8 @@ def publish_listing(
             listing_type=draft.listing_type,
             tags=draft.tags or None,
             materials=draft.materials or None,
-            shipping_profile_id=draft.shipping_profile_id,
+            shipping_profile_id=shipping_id,
+            return_policy_id=return_policy_id,
             is_personalizable=draft.is_personalizable or None,
             shop_id=shop_id,
         )

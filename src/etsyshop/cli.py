@@ -178,6 +178,23 @@ def optimize_cmd(
 
 
 # --- Phase 3: order reconciliation ---
+@app.command("winners")
+def winners_cmd(top: int = typer.Option(10, help="How many top sellers to show.")) -> None:
+    """Rank your listings by sales (units + revenue) to decide what to double down on."""
+    from etsyshop.analytics import winners
+    from etsyshop.store import load_store
+
+    receipts = _etsy().list_receipts().get("results") or []
+    records = load_store()
+    table = Table("listing", "slug", "units", "revenue")
+    for p in winners(receipts, top=top):
+        rec = records.get(p.listing_id)
+        table.add_row(p.listing_id, rec.slug if rec else "-", str(p.units), f"${p.revenue:.2f}")
+    console.print(table)
+    if not receipts:
+        console.print("[yellow]No orders yet.[/yellow]")
+
+
 @orders_app.command("status")
 def orders_status() -> None:
     """Reconcile Etsy orders against Printify fulfillment; flag exceptions."""
