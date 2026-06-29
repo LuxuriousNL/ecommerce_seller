@@ -58,18 +58,18 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   (max daily spend) + state. _AC: budget guard + orchestration tested._
 
 ## Epic A4 — A/B experiment & decision (capability 3)
-- [ ] **A4.1** `Experiment` model: two variants (product/creative), channels,
+- [x] **A4.1** `Experiment` model: two variants (product/creative), channels,
   budget split, objective, decision rule (metric, min_spend, min_conversions,
   margin). _AC: model + validation tested._
-- [ ] **A4.2** Launch: create parallel campaigns per variant per channel; record
+- [x] **A4.2** Launch: create parallel campaigns per variant per channel; record
   ids in state. _AC: tested with mock channels._
-- [ ] **A4.3** Insights collection: pull per-campaign metrics from each channel,
+- [x] **A4.3** Insights collection: pull per-campaign metrics from each channel,
   normalize to `Metrics` (impressions, clicks, CTR, spend, conversions, CPA,
   ROAS). _AC: normalization tested._
-- [ ] **A4.4** `DecisionEngine`: pick winner by rule (e.g. lower CPA / higher ROAS)
+- [x] **A4.4** `DecisionEngine`: pick winner by rule (e.g. lower CPA / higher ROAS)
   with a min-sample guard that returns "inconclusive" until thresholds met.
   _AC: winner / loser / inconclusive cases tested._
-- [ ] **A4.5** Act on decision: scale winner budget, pause/discard loser, record
+- [x] **A4.5** Act on decision: scale winner budget, pause/discard loser, record
   outcome; CLI `adctl experiment run|status|decide`. _AC: act-on-decision tested._
 
 ## Epic A5 — Ops & integration
@@ -89,3 +89,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - AI1: Epic A1 foundation — adsuite package, core models (Creative/Campaign/Metrics/Experiment), config + channel_available, CreativeBuilder (Claude copy + FTC disclosure).
 - AI2: Epic A2 organic — OrganicChannel seam + DryRun factory, Meta (FB photo + IG create/publish) and TikTok (Content Posting init) adapters, post_creative orchestrator, 'adctl organic' CLI.
 - AI3: Epic A3 paid — PaidChannel seam + DryRun, Meta Ads (campaign->adset->adcreative->ad, OUTCOME_TRAFFIC), Google Ads (OAuth refresh + googleAds:mutate, simplified), launch_paid budget guard, 'adctl paid' CLI.
+- AI4: Epic A4 A/B engine — launch_experiment (parallel per variant/channel, budget split+guard), insights collection (Meta/Google normalize + channel.insights), decide (cpa/roas/ctr + min-sample + margin guard), act_on_decision (scale winner/pause loser), 'adctl experiment' CLI.

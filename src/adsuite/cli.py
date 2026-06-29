@@ -66,5 +66,40 @@ def paid(
     console.print(table)
 
 
+@app.command("experiment")
+def experiment(
+    slug: str = typer.Option(..., help="Experiment slug."),
+    product_a: str = typer.Option(..., help="Variant A product slug."),
+    url_a: str = typer.Option(..., help="Variant A landing URL."),
+    product_b: str = typer.Option(..., help="Variant B product slug."),
+    url_b: str = typer.Option(..., help="Variant B landing URL."),
+    daily_budget: float = typer.Option(10.0, help="Total daily budget (split across variants)."),
+    channel: list[str] = typer.Option(None, help="meta_paid | google_ads (repeatable)."),
+) -> None:
+    """Launch an A/B experiment across two products (dry-run automatically without creds)."""
+    from adsuite.experiment import launch_experiment
+    from adsuite.models import Creative, Experiment, ExperimentVariant
+
+    channels = channel or ["meta_paid", "google_ads"]
+    exp = Experiment(
+        slug=slug, channels=channels, daily_budget=daily_budget,
+        variant_a=ExperimentVariant(label="A", product_slug=product_a, creative_slug=f"{product_a}-c"),
+        variant_b=ExperimentVariant(label="B", product_slug=product_b, creative_slug=f"{product_b}-c"),
+    )
+    creatives = {
+        "A": Creative(slug=f"{product_a}-c", product_slug=product_a, landing_url=url_a),
+        "B": Creative(slug=f"{product_b}-c", product_slug=product_b, landing_url=url_b),
+    }
+    launched = launch_experiment(exp, creatives)
+    table = Table("variant", "channel", "campaign id")
+    for label, by_channel in launched.campaigns.items():
+        for ch_name, cid in by_channel.items():
+            table.add_row(label, ch_name, cid)
+    console.print(table)
+    for err in launched.errors:
+        console.print(f"[yellow]{err}[/yellow]")
+    console.print("[dim]Collect insights over a few days, then decide() to pick a winner.[/dim]")
+
+
 if __name__ == "__main__":
     app()

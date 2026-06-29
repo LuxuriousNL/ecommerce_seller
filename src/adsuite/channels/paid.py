@@ -13,7 +13,7 @@ from typing import Protocol, runtime_checkable
 import httpx
 
 from adsuite.config import AdSettings, channel_available, settings
-from adsuite.models import Campaign, ChannelResult, Creative
+from adsuite.models import Campaign, ChannelResult, Creative, Metrics
 
 GRAPH = "https://graph.facebook.com/v21.0"
 GOOGLE_OAUTH = "https://oauth2.googleapis.com/token"
@@ -27,6 +27,42 @@ def _check(resp) -> None:
         raise RuntimeError(f"{resp.status_code}: {resp.text}")
 
 
+def normalize_meta_insights(data: dict) -> Metrics:
+    """Meta /insights row -> normalized Metrics."""
+    row = (data.get("data") or [{}])[0]
+    clicks = int(row.get("inline_link_clicks", row.get("clicks", 0)) or 0)
+    conversions = sum(
+        int(float(a.get("value", 0)))
+        for a in (row.get("actions") or [])
+        if "purchase" in a.get("action_type", "") or "conversion" in a.get("action_type", "")
+    )
+    revenue = sum(
+        float(a.get("value", 0))
+        for a in (row.get("action_values") or [])
+        if "purchase" in a.get("action_type", "")
+    )
+    return Metrics(impressions=int(row.get("impressions", 0) or 0), clicks=clicks,
+                   spend=float(row.get("spend", 0) or 0),
+                   conversions=conversions, revenue=revenue)
+
+
+def normalize_google_insights(data) -> Metrics:
+    """Google Ads searchStream batches -> normalized Metrics."""
+    batches = data if isinstance(data, list) else [data]
+    impr = clicks = cost = 0
+    conv = val = 0.0
+    for batch in batches:
+        for r in batch.get("results", []):
+            m = r.get("metrics", {})
+            impr += int(m.get("impressions", 0) or 0)
+            clicks += int(m.get("clicks", 0) or 0)
+            cost += int(m.get("costMicros", 0) or 0)
+            conv += float(m.get("conversions", 0) or 0)
+            val += float(m.get("conversionsValue", 0) or 0)
+    return Metrics(impressions=impr, clicks=clicks, spend=cost / 1_000_000,
+                   conversions=int(conv), revenue=val)
+
+
 @runtime_checkable
 class PaidChannel(Protocol):
     name: str
@@ -34,6 +70,7 @@ class PaidChannel(Protocol):
     def create_campaign(self, campaign: Campaign, creative: Creative) -> ChannelResult: ...
     def pause(self, campaign_id: str) -> ChannelResult: ...
     def set_budget(self, object_id: str, daily_budget: float) -> ChannelResult: ...
+    def insights(self, campaign_id: str) -> Metrics: ...
 
 
 class DryRunPaidChannel:
@@ -49,6 +86,9 @@ class DryRunPaidChannel:
 
     def set_budget(self, object_id: str, daily_budget: float) -> ChannelResult:
         return ChannelResult(ok=True, dry_run=True, ids={"object": object_id})
+
+    def insights(self, campaign_id: str) -> Metrics:
+        return Metrics()  # no data in dry-run
 
 
 class MetaAdsChannel:
@@ -110,6 +150,14 @@ class MetaAdsChannel:
             return ChannelResult(ok=True, ids={"object": object_id})
         except Exception as exc:  # noqa: BLE001
             return ChannelResult(ok=False, error=str(exc))
+
+    def insights(self, campaign_id: str) -> Metrics:
+        r = self._http.get(f"{GRAPH}/{campaign_id}/insights", params={
+            "fields": "impressions,clicks,inline_link_clicks,spend,actions,action_values",
+            "access_token": self.access_token,
+        })
+        _check(r)
+        return normalize_meta_insights(r.json())
 
 
 class GoogleAdsChannel:
@@ -187,6 +235,18 @@ class GoogleAdsChannel:
             return ChannelResult(ok=True, ids={"object": object_id})
         except Exception as exc:  # noqa: BLE001
             return ChannelResult(ok=False, error=str(exc))
+
+    def insights(self, campaign_id: str) -> Metrics:
+        query = (
+            "SELECT metrics.impressions, metrics.clicks, metrics.cost_micros, "
+            "metrics.conversions, metrics.conversions_value FROM campaign "
+            f"WHERE campaign.id = {campaign_id}"
+        )
+        r = self._http.post(
+            f"{GOOGLE_ADS}/customers/{self.customer_id}/googleAds:searchStream",
+            json={"query": query}, headers=self._headers())
+        _check(r)
+        return normalize_google_insights(r.json())
 
 
 def make_paid_channel(name: str, cfg: AdSettings | None = None) -> PaidChannel:
