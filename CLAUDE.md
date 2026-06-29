@@ -1,7 +1,9 @@
 # CLAUDE.md
 
 Operating guide for agents working in this repo. For the full narrative
-(architecture, decisions, use cases) read `docs/PROJECT_OVERVIEW.md`.
+(architecture, decisions, use cases) read `docs/PROJECT_OVERVIEW.md`; for the
+command/workflow cheat sheet see `docs/USAGE.md`; for credentials/first-run see
+`docs/ONBOARDING.md`.
 
 ## What this is
 A trend-driven Etsy/Shopify print-on-demand automation platform: detect trends →
