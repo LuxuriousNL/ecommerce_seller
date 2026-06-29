@@ -48,11 +48,11 @@ stores to maximize the paid-ads platform.
   continuous operation. _AC: cycle runs end-to-end with mocks._
 
 ## Epic S — Shopify niche-store factory (`shopkit` subproject)
-- [ ] **S.1** `shopkit` package + ShopifyClient (Admin GraphQL): products,
+- [x] **S.1** `shopkit` package + ShopifyClient (Admin GraphQL): products,
   variants, collections, pages, navigation, publications; dry-run + mock-tested. _AC._
-- [ ] **S.2** Store provisioner: brand a niche store (palette/fonts/policies/SEO)
+- [x] **S.2** Store provisioner: brand a niche store (palette/fonts/policies/SEO)
   + niche collection + home content from the niche catalog. _AC: tested._
-- [ ] **S.3** Product sync: push validated products (reuse designs/mockups/listing
+- [x] **S.3** Product sync: push validated products (reuse designs/mockups/listing
   copy from etsyshop) to Shopify; link Printify fulfillment. _AC: payload tested._
 - [ ] **S.4** Google Merchant Center feed generation + Meta Pixel / Google tag
   config (unlock Shopping/PMax + conversion tracking). _AC: feed/pixel tested._
@@ -79,3 +79,4 @@ stores to maximize the paid-ads platform.
 - (build loop appends here)
 - GI1: Epic P profit brain — ProductPnL (net/margin), platform-fee estimate, build_ledger, revenue/units from receipts, classify scale/hold/kill, rank + decisions, 'etsyshop profit' CLI.
 - GI2: Epic G growth orchestrator — run_cycle engine (select->ideate->make->advertise->measure->decide->act), Guardrails (max products, ad-spend cap, kill switch, QC-halt), dedupe, build_plan_steps offline dry-run, 'etsyshop grow run' CLI.
+- GI3: Epic S (S.1-S.3) — shopkit package, Shopify Admin GraphQL client (+DryRun), store provisioner (brand kit + collection + about page), product sync from optimized listing, 'shopctl' CLI (status/provision).

@@ -17,6 +17,7 @@ dependencies = [
 etsyshop = "etsyshop.cli:app"
 trendscan = "trendscanner.scan:main"
 adctl = "adsuite.cli:app"
+shopctl = "shopkit.cli:app"
 
 [project.optional-dependencies]
 dev = ["ruff>=0.5", "pytest>=8.0", "pillow>=10"]
@@ -28,7 +29,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/etsyshop", "src/trendscanner", "src/adsuite"]
+packages = ["src/etsyshop", "src/trendscanner", "src/adsuite", "src/shopkit"]
 
 [tool.ruff]
 line-length = 100
