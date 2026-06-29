@@ -26,14 +26,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ---
 
 ## Epic A1 — Foundation & creative
-- [ ] **A1.1** `adsuite` package scaffold (own installed package, shared venv) +
+- [x] **A1.1** `adsuite` package scaffold (own installed package, shared venv) +
   core models: `Creative`, `Campaign`, `AdSet`, `Ad`, `Metrics`, `Experiment`,
   `ChannelResult`. _AC: models + slugify tested._
-- [ ] **A1.2** `CreativeBuilder`: from a design/mockup path/url + listing context
+- [x] **A1.2** `CreativeBuilder`: from a design/mockup path/url + listing context
   → platform creatives (aspect ratios 1:1, 4:5, 9:16) + Claude-generated copy
   (organic caption + hashtags per platform; paid ad headline/primary text with
   FTC/ASA disclosure). _AC: copy builder tested with a mocked Anthropic client._
-- [ ] **A1.3** Config + credentials: Meta (app token, page id, IG business id),
+- [x] **A1.3** Config + credentials: Meta (app token, page id, IG business id),
   TikTok (token, advertiser id), Google Ads (dev token, customer id, OAuth) in
   config + `.env.example`; `channel_available(name)` detection. _AC: tested._
 
@@ -86,3 +86,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 ## Iteration log
 - (build loop appends here)
+- AI1: Epic A1 foundation — adsuite package, core models (Creative/Campaign/Metrics/Experiment), config + channel_available, CreativeBuilder (Claude copy + FTC disclosure).
