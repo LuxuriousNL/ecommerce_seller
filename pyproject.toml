@@ -16,6 +16,7 @@ dependencies = [
 [project.scripts]
 etsyshop = "etsyshop.cli:app"
 trendscan = "trendscanner.scan:main"
+adctl = "adsuite.cli:app"
 
 [project.optional-dependencies]
 dev = ["ruff>=0.5", "pytest>=8.0", "pillow>=10"]

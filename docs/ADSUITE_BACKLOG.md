@@ -38,13 +38,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   config + `.env.example`; `channel_available(name)` detection. _AC: tested._
 
 ## Epic A2 — Organic posting (capability 1)
-- [ ] **A2.1** `OrganicChannel` protocol (`post(creative) -> PostResult`) + factory
+- [x] **A2.1** `OrganicChannel` protocol (`post(creative) -> PostResult`) + factory
   that returns a `DryRunChannel` when creds are missing. _AC: tested._
-- [ ] **A2.2** Meta organic adapter: FB Page feed post + IG content publish
+- [x] **A2.2** Meta organic adapter: FB Page feed post + IG content publish
   (create media container → publish). _AC: request shaping tested via mock httpx._
-- [ ] **A2.3** TikTok organic adapter: Content Posting API (init → upload → publish;
+- [x] **A2.3** TikTok organic adapter: Content Posting API (init → upload → publish;
   draft fallback). _AC: request shaping tested._
-- [ ] **A2.4** Organic orchestrator + CLI `adctl organic` (post one creative to
+- [x] **A2.4** Organic orchestrator + CLI `adctl organic` (post one creative to
   selected channels, dry-run by default) + state record. _AC: orchestrator tested._
 
 ## Epic A3 — Paid campaigns (capability 2)
@@ -87,3 +87,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 ## Iteration log
 - (build loop appends here)
 - AI1: Epic A1 foundation — adsuite package, core models (Creative/Campaign/Metrics/Experiment), config + channel_available, CreativeBuilder (Claude copy + FTC disclosure).
+- AI2: Epic A2 organic — OrganicChannel seam + DryRun factory, Meta (FB photo + IG create/publish) and TikTok (Content Posting init) adapters, post_creative orchestrator, 'adctl organic' CLI.

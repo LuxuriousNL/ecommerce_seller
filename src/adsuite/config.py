@@ -40,9 +40,10 @@ settings = AdSettings()
 
 # What each channel needs to run live (else it degrades to dry-run).
 _REQUIREMENTS = {
-    "meta_organic": ("meta_access_token", "meta_page_id"),
-    "meta_paid": ("meta_access_token", "meta_ad_account_id"),
+    "facebook": ("meta_access_token", "meta_page_id"),
+    "instagram": ("meta_access_token", "meta_ig_user_id"),
     "tiktok": ("tiktok_access_token",),
+    "meta_paid": ("meta_access_token", "meta_ad_account_id"),
     "google_ads": ("google_ads_developer_token", "google_ads_customer_id",
                    "google_ads_refresh_token"),
 }

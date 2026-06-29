@@ -37,7 +37,8 @@ def test_experiment_holds_two_variants():
 # --- config ---
 def test_channel_available():
     cfg = AdSettings(META_ACCESS_TOKEN="t", META_PAGE_ID="p")
-    assert channel_available("meta_organic", cfg)
+    assert channel_available("facebook", cfg)
+    assert not channel_available("instagram", cfg)        # needs ig user id
     assert not channel_available("meta_paid", cfg)        # needs ad account
     assert not channel_available("google_ads", cfg)
     assert not channel_available("nonsense", cfg)
