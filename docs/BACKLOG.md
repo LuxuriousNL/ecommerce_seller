@@ -50,14 +50,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] **E5.1** Real Printify variant cost lookup → replace `estimate_product_cost`.
 - [x] **E5.2** Client resilience: retry + backoff + rate-limit handling for Etsy
   (10/s, 10k/day) and Printify (200/30min publish). _AC: tested._
-- [ ] **E5.3** Multi-variant Etsy listings in B (`updateListingInventory`) +
+- [x] **E5.3** Multi-variant Etsy listings in B (`updateListingInventory`) +
   variant_map population for accurate fulfillment routing.
 - [x] **E5.4** Shipping-profile + return-policy auto-resolution before activate.
 - [x] **E5.5** Winner tracking: read orders, rank listings, feed back into the
   planner to double down on sellers.
 - [ ] **E5.6** Print-standard normalization (300 DPI, sRGB, PNG/transparent) via
   optional Pillow extra.
-- [ ] **E5.7** Structured logging across the pipeline.
+- [x] **E5.7** Structured logging across the pipeline.
 - [ ] **E5.8** CI (GitHub Actions) running `pytest` + ruff on push.
 - [ ] **E5.9** Dockerfile for the dashboard + a scanner runner.
 - [ ] **E5.10** `dashboard`: add trends/plan/design panels.
@@ -72,3 +72,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - I5: trendscanner sources complete — Google Trends (official RSS) + ecommerce (JSON-LD, robots-aware) + scan runner/CLI (trendscan) writing a feed file. Epic 4 done.
 - I6: E5.1 real Printify variant cost (min enabled, used in publish pod repricing); E5.2 retry+backoff (Retry-After honored) on Etsy+Printify clients.
 - I7: E5.4 auto-resolve shipping profile + return policy before physical activate (best-effort); E5.5 winner tracking (rank listings by units+revenue) + 'winners' CLI.
+- I8: E5.3 multi-variant inventory (update_listing_inventory + SKU-keyed build) and SKU-based fulfillment routing; E5.7 structured logging (setup_logging + get_logger, wired into CLI/publisher).

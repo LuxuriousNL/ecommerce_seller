@@ -27,7 +27,15 @@ def build_printify_order(record: ListingRecord, receipt: dict) -> dict:
     for txn in receipt.get("transactions") or []:
         if str(txn.get("listing_id")) != record.etsy_listing_id:
             continue
-        variant_id = record.variant_map.get(str(txn.get("product_id"))) or record.default_variant_id
+        # Prefer the SKU (set to the Printify variant id at publish), then the
+        # explicit variant_map, then the listing's default variant.
+        sku = txn.get("sku")
+        variant_id = int(sku) if sku is not None and str(sku).isdigit() else None
+        if variant_id is None:
+            variant_id = (
+                record.variant_map.get(str(txn.get("product_id")))
+                or record.default_variant_id
+            )
         line_items.append(
             {
                 "product_id": record.printify_product_id,

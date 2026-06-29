@@ -15,8 +15,11 @@ from typing import Callable
 import httpx
 
 from etsyshop.clients.etsy import EtsyClient
+from etsyshop.logging_setup import get_logger
 from etsyshop.models import ListingDraft, OptimizedListing, ProductTemplate
 from etsyshop.taxonomy import map_attributes, resolve_taxonomy_id
+
+log = get_logger("publisher")
 
 FetchFn = Callable[[str], bytes]
 
@@ -148,6 +151,7 @@ def publish_listing(
         )
         listing_id = str(listing["listing_id"])
         result.listing_id = listing_id
+        log.info("created %s listing %s (taxonomy %s)", draft.listing_type, listing_id, taxonomy_id)
 
         # 3a. Physical: relay Printify mockups (hero first via image order).
         rank = 0

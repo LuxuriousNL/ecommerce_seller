@@ -373,3 +373,11 @@ class EtsyClient:
 
     def delete_listing(self, listing_id: int | str) -> Any:
         return self._request("DELETE", f"/application/listings/{listing_id}")
+
+    def update_listing_inventory(
+        self, listing_id: int | str, products: list[dict], **extra: Any
+    ) -> dict:
+        """Set variations/offerings (JSON body). SKUs let us route orders to Printify."""
+        data: dict[str, Any] = {"products": products}
+        data.update(extra)
+        return self._request("PUT", f"/application/listings/{listing_id}/inventory", json=data)

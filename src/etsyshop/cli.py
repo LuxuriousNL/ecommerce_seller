@@ -13,6 +13,13 @@ from etsyshop.models import DesignManifest, ProductTemplate
 from etsyshop.pipeline import create_design_product
 
 app = typer.Typer(help="Automate Etsy POD via Printify.", no_args_is_help=True)
+
+
+@app.callback()
+def _bootstrap() -> None:
+    from etsyshop.logging_setup import setup_logging
+
+    setup_logging()
 printify_app = typer.Typer(help="Printify commands.")
 etsy_app = typer.Typer(help="Etsy commands.")
 catalog_app = typer.Typer(help="Browse Printify's catalog to build product templates.")
