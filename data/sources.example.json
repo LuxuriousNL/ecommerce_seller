@@ -1,0 +1,7 @@
+[
+  {"kind": "google_trends", "target": "US", "category": "news"},
+  {"kind": "rss", "target": "https://news.google.com/rss/search?q=trending+gift+ideas&hl=en-US&gl=US&ceid=US:en", "category": "gifting"},
+  {"kind": "rss", "target": "https://news.google.com/rss/search?q=fashion+trends&hl=en-US&gl=US&ceid=US:en", "category": "fashion"},
+  {"kind": "rss", "target": "https://news.google.com/rss/search?q=home+decor+trend&hl=en-US&gl=US&ceid=US:en", "category": "ecommerce"},
+  {"kind": "ecommerce", "target": "https://www.example-store.com/collections/new-arrivals", "category": "ecommerce"}
+]
