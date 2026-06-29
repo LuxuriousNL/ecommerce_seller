@@ -70,6 +70,17 @@ def build_ledger(
     return ledger
 
 
+def ad_components_from_metrics(
+    metrics_by_key: dict,
+) -> tuple[dict[str, float], dict[str, float], dict[str, int]]:
+    """Map ad metrics (duck-typed .spend/.revenue/.conversions, e.g. adsuite/pixel)
+    into (ad_spend_by_key, revenue_by_key, units_by_key) for build_ledger."""
+    ad_spend = {k: float(getattr(m, "spend", 0.0)) for k, m in metrics_by_key.items()}
+    revenue = {k: float(getattr(m, "revenue", 0.0)) for k, m in metrics_by_key.items()}
+    units = {k: int(getattr(m, "conversions", 0)) for k, m in metrics_by_key.items()}
+    return ad_spend, revenue, units
+
+
 def revenue_units_from_receipts(receipts: list[dict]) -> tuple[dict[str, float], dict[str, int]]:
     """Revenue + units per listing id from Etsy receipts (reuses analytics)."""
     perf = rank_listings(receipts)

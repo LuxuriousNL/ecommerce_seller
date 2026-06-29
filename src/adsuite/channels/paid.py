@@ -192,16 +192,23 @@ class GoogleAdsChannel:
 
     def create_campaign(self, campaign: Campaign, creative: Creative) -> ChannelResult:
         try:
+            # Shopping/PMax (needs a Merchant feed — what a Shopify store provides)
+            # vs plain Search, chosen from the campaign objective.
+            obj = (campaign.objective or "").lower()
+            channel_type = "PERFORMANCE_MAX" if ("pmax" in obj or "shopping" in obj) else "SEARCH"
+            campaign_op = {
+                "name": campaign.name, "status": "PAUSED",
+                "advertisingChannelType": channel_type,
+            }
+            if channel_type == "SEARCH":
+                campaign_op["manualCpc"] = {}
             body = {"mutateOperations": [
                 {"campaignBudgetOperation": {"create": {
                     "name": f"{campaign.name} budget",
                     "amountMicros": int(round(campaign.daily_budget * 1_000_000)),
                     "deliveryMethod": "STANDARD",
                 }}},
-                {"campaignOperation": {"create": {
-                    "name": campaign.name, "status": "PAUSED",
-                    "advertisingChannelType": "SEARCH", "manualCpc": {},
-                }}},
+                {"campaignOperation": {"create": campaign_op}},
             ]}
             r = self._http.post(f"{GOOGLE_ADS}/customers/{self.customer_id}/googleAds:mutate",
                                 json=body, headers=self._headers())
@@ -288,3 +295,18 @@ def launch_paid(
                             daily_budget=daily_budget, landing_url=landing_url or creative.landing_url)
         out[ch_name] = make_paid_channel(ch_name, cfg).create_campaign(campaign, creative)
     return out
+
+
+def launch_shopping(
+    creative: Creative,
+    *,
+    daily_budget: float,
+    name: str,
+    store_url: str,
+    max_daily_budget: float = 20.0,
+    cfg: AdSettings | None = None,
+) -> dict[str, ChannelResult]:
+    """Launch a Google Shopping / PMax campaign for a Shopify store (needs its feed)."""
+    return launch_paid(creative, channels=["google_ads"], daily_budget=daily_budget,
+                       name=name, objective="pmax", landing_url=store_url,
+                       max_daily_budget=max_daily_budget, cfg=cfg)
