@@ -65,13 +65,13 @@ stores to maximize the paid-ads platform.
 - [x] **S.8** CLI `shopctl` (provision | sync | feed | status). _AC: smoke-tested._
 
 ## Epic V — Live verification & onboarding
-- [ ] **V.1** `etsyshop doctor`: check every credential/config; report
+- [x] **V.1** `etsyshop doctor`: check every credential/config; report
   ready/missing per system (Etsy, Printify, Anthropic, image, ads, Shopify). _AC: tested._
-- [ ] **V.2** Safe per-system smoke tests (Etsy draft, Printify, image gen, ad
+- [x] **V.2** Safe per-system smoke tests (Etsy draft, Printify, image gen, ad
   dry-run, Shopify) behind confirmation. _AC: harness tested with mocks._
-- [ ] **V.3** Recorded-fixture (VCR-style) integration tests pinning live request
+- [x] **V.3** Recorded-fixture (VCR-style) integration tests pinning live request
   shapes so they don't silently drift. _AC: at least one per external API._
-- [ ] **V.4** Onboarding doc: credentials + approvals + first-run runbook.
+- [x] **V.4** Onboarding doc: credentials + approvals + first-run runbook.
 
 ---
 
@@ -82,3 +82,4 @@ stores to maximize the paid-ads platform.
 - GI3: Epic S (S.1-S.3) — shopkit package, Shopify Admin GraphQL client (+DryRun), store provisioner (brand kit + collection + about page), product sync from optimized listing, 'shopctl' CLI (status/provision).
 - GI4: Epic S (S.4-S.6) — Google Merchant feed (TSV) + pixel config/install, shop registry (+honest manual go-live), profit gating (store only for niches with a scaling winner).
 - GI5: Epic S done — Google Shopping/PMax campaign type + launch_shopping, pixel/ad metrics -> profit ledger (ad_components_from_metrics), full 'shopctl' CLI (status/provision/sync/feed/gate).
+- GI6: Epic V — 'etsyshop doctor' (readiness across all systems) + safe smoke tests, fixture-pinned integration tests (etsy/printify/meta/google/shopify shapes), ONBOARDING.md runbook. BACKLOG COMPLETE.

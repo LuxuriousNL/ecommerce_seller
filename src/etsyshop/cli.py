@@ -637,6 +637,38 @@ def dashboard(
     uvicorn.run(create_app(), host=host, port=port)
 
 
+@app.command("doctor")
+def doctor_cmd(
+    smoke: bool = typer.Option(False, help="Run safe read-only smoke tests on ready systems."),
+) -> None:
+    """Preflight: which integrations are configured (and optionally a safe smoke test each)."""
+    from etsyshop.doctor import run_checks, smoke_etsy, smoke_printify
+
+    checks = run_checks()
+    table = Table("system", "status", "detail")
+    for c in checks:
+        table.add_row(c.system, "[green]ready[/green]" if c.ready else "[yellow]missing[/yellow]",
+                      c.detail)
+    console.print(table)
+    ready = sum(c.ready for c in checks)
+    console.print(f"{ready}/{len(checks)} systems configured.")
+
+    if smoke:
+        console.rule("smoke tests")
+        for name, fn, build in (("printify", smoke_printify, _printify),
+                                ("etsy", smoke_etsy, _etsy)):
+            try:
+                client = build()
+                if name == "printify":
+                    with client as c:
+                        ok, detail = fn(c)
+                else:
+                    ok, detail = fn(client)
+                console.print(f"[green]{name} OK[/green] - {detail}")
+            except Exception as exc:  # noqa: BLE001
+                console.print(f"[yellow]{name} skipped[/yellow] - {exc}")
+
+
 @app.command("connect-test")
 def connect_test() -> None:
     """Verify Printify + Etsy credentials are wired up correctly."""
