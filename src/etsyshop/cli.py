@@ -185,6 +185,31 @@ def optimize_cmd(
 
 
 # --- Phase 3: order reconciliation ---
+@app.command("profit")
+def profit_cmd(scale_margin: float = typer.Option(0.25, help="Margin at/above which to scale.")) -> None:
+    """Net-profit P&L per listing with scale/hold/kill decisions."""
+    from etsyshop.profit import build_ledger, classify, rank, revenue_units_from_receipts
+    from etsyshop.store import load_store
+
+    receipts = _etsy().list_receipts().get("results") or []
+    rev, units = revenue_units_from_receipts(receipts)
+    ledger = build_ledger(revenue_by_key=rev, units_by_key=units)
+    records = load_store()
+    table = Table("listing", "slug", "units", "revenue", "fees", "net", "margin", "action")
+    for pnl in rank(ledger):
+        rec = records.get(pnl.key)
+        d = classify(pnl, scale_margin=scale_margin)
+        colour = {"scale": "green", "kill": "red"}.get(d.action, "yellow")
+        table.add_row(pnl.key, rec.slug if rec else "-", str(pnl.units),
+                      f"${pnl.revenue:.2f}", f"${pnl.platform_fees:.2f}", f"${pnl.net_profit:.2f}",
+                      f"{pnl.margin*100:.0f}%", f"[{colour}]{d.action}[/{colour}]")
+    console.print(table)
+    if not receipts:
+        console.print("[yellow]No orders yet — P&L needs sales data.[/yellow]")
+    console.print("[dim]Note: COGS + ad spend default to 0 here; the orchestrator "
+                  "supplies them for full net profit.[/dim]")
+
+
 @app.command("winners")
 def winners_cmd(top: int = typer.Option(10, help="How many top sellers to show.")) -> None:
     """Rank your listings by sales (units + revenue) to decide what to double down on."""

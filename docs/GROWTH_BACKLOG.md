@@ -25,14 +25,14 @@ stores to maximize the paid-ads platform.
 ---
 
 ## Epic P — Profitability brain
-- [ ] **P.1** Unified P&L model + calculator: net = revenue − COGS − platform
+- [x] **P.1** Unified P&L model + calculator: net = revenue − COGS − platform
   fees − ad spend − returns reserve; per product/listing/campaign. _AC: tested._
-- [ ] **P.2** Ledger collectors: normalize Etsy receipts + Shopify orders
+- [x] **P.2** Ledger collectors: normalize Etsy receipts + Shopify orders
   (revenue), adsuite insights (ad spend), Printify (COGS) into one ledger.
   Injectable/mocked. _AC: tested._
-- [ ] **P.3** Ranking + decisions: rank by contribution margin; classify
+- [x] **P.3** Ranking + decisions: rank by contribution margin; classify
   scale / hold / kill with thresholds. _AC: scale/hold/kill cases tested._
-- [ ] **P.4** CLI `etsyshop profit` report; emit scale/kill signals consumable
+- [x] **P.4** CLI `etsyshop profit` report; emit scale/kill signals consumable
   by the orchestrator and adsuite. _AC: report assembly tested._
 
 ## Epic G — Growth orchestrator (closed loop)
@@ -77,3 +77,4 @@ stores to maximize the paid-ads platform.
 
 ## Iteration log
 - (build loop appends here)
+- GI1: Epic P profit brain — ProductPnL (net/margin), platform-fee estimate, build_ledger, revenue/units from receipts, classify scale/hold/kill, rank + decisions, 'etsyshop profit' CLI.
