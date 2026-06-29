@@ -54,11 +54,11 @@ stores to maximize the paid-ads platform.
   + niche collection + home content from the niche catalog. _AC: tested._
 - [x] **S.3** Product sync: push validated products (reuse designs/mockups/listing
   copy from etsyshop) to Shopify; link Printify fulfillment. _AC: payload tested._
-- [ ] **S.4** Google Merchant Center feed generation + Meta Pixel / Google tag
+- [x] **S.4** Google Merchant Center feed generation + Meta Pixel / Google tag
   config (unlock Shopping/PMax + conversion tracking). _AC: feed/pixel tested._
-- [ ] **S.5** Partner dev-store creation where possible + documented manual
+- [x] **S.5** Partner dev-store creation where possible + documented manual
   production go-live; store registry/state. _AC: registry tested._
-- [ ] **S.6** Profit gating: provision/promote a dedicated store only when the
+- [x] **S.6** Profit gating: provision/promote a dedicated store only when the
   niche/product clears the profit threshold (Epic P). _AC: gate tested._
 - [ ] **S.7** adsuite integration: paid campaigns target Shopify URLs; add a
   Google Shopping/PMax channel; pixel conversions flow into the profit ledger. _AC._
@@ -80,3 +80,4 @@ stores to maximize the paid-ads platform.
 - GI1: Epic P profit brain — ProductPnL (net/margin), platform-fee estimate, build_ledger, revenue/units from receipts, classify scale/hold/kill, rank + decisions, 'etsyshop profit' CLI.
 - GI2: Epic G growth orchestrator — run_cycle engine (select->ideate->make->advertise->measure->decide->act), Guardrails (max products, ad-spend cap, kill switch, QC-halt), dedupe, build_plan_steps offline dry-run, 'etsyshop grow run' CLI.
 - GI3: Epic S (S.1-S.3) — shopkit package, Shopify Admin GraphQL client (+DryRun), store provisioner (brand kit + collection + about page), product sync from optimized listing, 'shopctl' CLI (status/provision).
+- GI4: Epic S (S.4-S.6) — Google Merchant feed (TSV) + pixel config/install, shop registry (+honest manual go-live), profit gating (store only for niches with a scaling winner).

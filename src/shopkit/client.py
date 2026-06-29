@@ -70,6 +70,15 @@ class ShopifyClient:
         data = self._gql(q, {"page": {"title": title, "body": body_html}})
         return _user_errors(data, "pageCreate")["page"]
 
+    def create_web_pixel(self, settings: dict) -> dict:
+        """Install a web pixel (Meta/Google tag config) for conversion tracking."""
+        import json as _json
+
+        q = ("mutation($wp: WebPixelInput!){ webPixelCreate(webPixel:$wp){ "
+             "webPixel{ id } userErrors{ field message } } }")
+        data = self._gql(q, {"wp": {"settings": _json.dumps(settings)}})
+        return _user_errors(data, "webPixelCreate")["webPixel"]
+
 
 class DryRunShopifyClient:
     """No-network client that returns simulated ids (used without credentials)."""
@@ -94,6 +103,9 @@ class DryRunShopifyClient:
 
     def create_page(self, *, title, body_html=""):
         return {"id": self._id("Page"), "dry_run": True}
+
+    def create_web_pixel(self, settings):
+        return {"id": self._id("WebPixel"), "dry_run": True}
 
 
 def make_client(cfg: ShopSettings | None = None):
