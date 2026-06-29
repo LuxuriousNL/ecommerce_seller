@@ -48,13 +48,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   selected channels, dry-run by default) + state record. _AC: orchestrator tested._
 
 ## Epic A3 — Paid campaigns (capability 2)
-- [ ] **A3.1** `PaidChannel` protocol: `create_campaign`, `create_adset`,
+- [x] **A3.1** `PaidChannel` protocol: `create_campaign`, `create_adset`,
   `create_ad`, `pause`, `set_budget`. _AC: tested._
-- [ ] **A3.2** Meta Ads adapter: campaign (objective OUTCOME_TRAFFIC) → ad set
+- [x] **A3.2** Meta Ads adapter: campaign (objective OUTCOME_TRAFFIC) → ad set
   (budget, targeting, optimization) → ad (creative). _AC: request shaping tested._
-- [ ] **A3.3** Google Ads adapter: Search/Demand Gen campaign → ad group → ad to a
+- [x] **A3.3** Google Ads adapter: Search/Demand Gen campaign → ad group → ad to a
   listing URL (developer-token note). _AC: request shaping tested._
-- [ ] **A3.4** Paid orchestrator + CLI `adctl paid` with budget guard
+- [x] **A3.4** Paid orchestrator + CLI `adctl paid` with budget guard
   (max daily spend) + state. _AC: budget guard + orchestration tested._
 
 ## Epic A4 — A/B experiment & decision (capability 3)
@@ -88,3 +88,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - (build loop appends here)
 - AI1: Epic A1 foundation — adsuite package, core models (Creative/Campaign/Metrics/Experiment), config + channel_available, CreativeBuilder (Claude copy + FTC disclosure).
 - AI2: Epic A2 organic — OrganicChannel seam + DryRun factory, Meta (FB photo + IG create/publish) and TikTok (Content Posting init) adapters, post_creative orchestrator, 'adctl organic' CLI.
+- AI3: Epic A3 paid — PaidChannel seam + DryRun, Meta Ads (campaign->adset->adcreative->ad, OUTCOME_TRAFFIC), Google Ads (OAuth refresh + googleAds:mutate, simplified), launch_paid budget guard, 'adctl paid' CLI.

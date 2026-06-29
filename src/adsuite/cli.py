@@ -34,5 +34,37 @@ def organic(
     console.print(table)
 
 
+@app.command("paid")
+def paid(
+    name: str = typer.Option(..., help="Campaign name."),
+    landing_url: str = typer.Option(..., help="Etsy listing URL to drive traffic to."),
+    headline: str = typer.Option("", help="Paid ad headline."),
+    primary_text: str = typer.Option("", help="Paid ad primary text."),
+    daily_budget: float = typer.Option(5.0, help="Daily budget per channel."),
+    max_daily_budget: float = typer.Option(20.0, help="Safety cap per channel."),
+    channel: list[str] = typer.Option(None, help="meta_paid | google_ads (repeatable)."),
+) -> None:
+    """Launch a paid campaign (dry-run automatically without creds; budget-guarded)."""
+    from adsuite.channels.paid import BudgetError, launch_paid
+    from adsuite.creative import ensure_disclosure
+    from adsuite.models import Creative
+
+    channels = channel or ["meta_paid", "google_ads"]
+    creative = Creative(slug=name, landing_url=landing_url, paid_headline=headline,
+                        paid_primary_text=ensure_disclosure(primary_text) if primary_text else "")
+    try:
+        results = launch_paid(creative, channels=channels, daily_budget=daily_budget,
+                              name=name, landing_url=landing_url,
+                              max_daily_budget=max_daily_budget)
+    except BudgetError as exc:
+        console.print(f"[red]Budget guard:[/red] {exc}")
+        raise typer.Exit(1) from exc
+    table = Table("channel", "status", "ids", "error")
+    for ch_name, r in results.items():
+        status = "dry-run" if r.dry_run else ("ok" if r.ok else "FAIL")
+        table.add_row(ch_name, status, str(r.ids) if r.ok else "-", r.error or "")
+    console.print(table)
+
+
 if __name__ == "__main__":
     app()
