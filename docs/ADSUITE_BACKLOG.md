@@ -73,13 +73,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
   outcome; CLI `adctl experiment run|status|decide`. _AC: act-on-decision tested._
 
 ## Epic A5 — Ops & integration
-- [ ] **A5.1** adsuite state store (campaigns/experiments JSON, git-ignored).
-- [ ] **A5.2** etsyshop bridge: source creatives from the listings store + design
+- [x] **A5.1** adsuite state store (campaigns/experiments JSON, git-ignored).
+- [x] **A5.2** etsyshop bridge: source creatives from the listings store + design
   artifacts; feed experiment winners back to the product planner. _AC: tested._
-- [ ] **A5.3** Report: `adctl report` summarizing campaigns/experiments + an
+- [x] **A5.3** Report: `adctl report` summarizing campaigns/experiments + an
   optional dashboard panel. _AC: report assembly tested._
-- [ ] **A5.4** CI + Dockerfile + logging coverage for adsuite; ruff clean.
-- [ ] **A5.5** Policy guardrails: FTC/ASA disclosure in paid copy, platform
+- [x] **A5.4** CI + Dockerfile + logging coverage for adsuite; ruff clean.
+- [x] **A5.5** Policy guardrails: FTC/ASA disclosure in paid copy, platform
   content checks (no prohibited claims), surfaced before publish. _AC: tested._
 
 ---
@@ -90,3 +90,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - AI2: Epic A2 organic — OrganicChannel seam + DryRun factory, Meta (FB photo + IG create/publish) and TikTok (Content Posting init) adapters, post_creative orchestrator, 'adctl organic' CLI.
 - AI3: Epic A3 paid — PaidChannel seam + DryRun, Meta Ads (campaign->adset->adcreative->ad, OUTCOME_TRAFFIC), Google Ads (OAuth refresh + googleAds:mutate, simplified), launch_paid budget guard, 'adctl paid' CLI.
 - AI4: Epic A4 A/B engine — launch_experiment (parallel per variant/channel, budget split+guard), insights collection (Meta/Google normalize + channel.insights), decide (cpa/roas/ctr + min-sample + margin guard), act_on_decision (scale winner/pause loser), 'adctl experiment' CLI.
+- AI5: Epic A5 ops — adsuite state store, etsyshop bridge (creative_from_listing + winner_signal), report + 'adctl report', policy guardrails (prohibited claims + disclosure, wired into paid CLI), logging. CI/Dockerfile already cover adsuite. BACKLOG COMPLETE.

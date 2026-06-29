@@ -52,6 +52,9 @@ def paid(
     channels = channel or ["meta_paid", "google_ads"]
     creative = Creative(slug=name, landing_url=landing_url, paid_headline=headline,
                         paid_primary_text=ensure_disclosure(primary_text) if primary_text else "")
+    from adsuite.policy import review_creative
+    for issue in review_creative(creative):
+        console.print(f"[yellow]policy:[/yellow] {issue}")
     try:
         results = launch_paid(creative, channels=channels, daily_budget=daily_budget,
                               name=name, landing_url=landing_url,
@@ -63,6 +66,23 @@ def paid(
     for ch_name, r in results.items():
         status = "dry-run" if r.dry_run else ("ok" if r.ok else "FAIL")
         table.add_row(ch_name, status, str(r.ids) if r.ok else "-", r.error or "")
+    console.print(table)
+
+
+@app.command("report")
+def report() -> None:
+    """Summarize stored experiments (status, products, winner, campaigns)."""
+    from adsuite.report import build_report
+    from adsuite.store import load_experiments
+
+    rows = build_report(load_experiments())
+    if not rows:
+        console.print("[yellow]No experiments recorded yet.[/yellow]")
+        return
+    table = Table("experiment", "status", "products", "winner", "campaigns", "channels")
+    for r in rows:
+        table.add_row(r["slug"], r["status"], r["products"], r["winner"],
+                      str(r["campaigns"]), r["channels"])
     console.print(table)
 
 

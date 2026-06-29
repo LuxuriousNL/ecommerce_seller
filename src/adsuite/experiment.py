@@ -7,12 +7,15 @@ guard, then scale the winner's budget and pause the loser.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from typing import Callable
 
 from adsuite.channels.paid import make_paid_channel
 from adsuite.config import AdSettings
 from adsuite.models import Campaign, Creative, DecisionRule, Experiment, Metrics
+
+log = logging.getLogger("adsuite.experiment")
 
 ChannelFactory = Callable[[str, AdSettings | None], object]
 
@@ -125,6 +128,7 @@ def decide(metrics: dict[str, Metrics], rule: DecisionRule) -> Decision:
     if margin < rule.margin:
         return Decision(None, None, True,
                         f"margin {margin:.2%} below threshold {rule.margin:.2%}")
+    log.info("experiment decision: %s wins on %s by %.2f%%", winner, rule.metric, margin * 100)
     return Decision(winner, loser, False,
                     f"{winner} wins on {rule.metric} by {margin:.2%}")
 
