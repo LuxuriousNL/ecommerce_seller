@@ -25,6 +25,7 @@ etsy_app = typer.Typer(help="Etsy commands.")
 catalog_app = typer.Typer(help="Browse Printify's catalog to build product templates.")
 products_app = typer.Typer(help="Create and publish products.")
 orders_app = typer.Typer(help="Order operations.")
+grow_app = typer.Typer(help="Growth orchestrator (the closed loop).")
 listing_app = typer.Typer(help="Enrich Etsy listings beyond what Printify can set.")
 publish_app = typer.Typer(help="Architecture B: create and own the Etsy listing.")
 app.add_typer(printify_app, name="printify")
@@ -32,6 +33,7 @@ app.add_typer(etsy_app, name="etsy")
 app.add_typer(catalog_app, name="catalog")
 app.add_typer(products_app, name="products")
 app.add_typer(orders_app, name="orders")
+app.add_typer(grow_app, name="grow")
 app.add_typer(listing_app, name="listing")
 app.add_typer(publish_app, name="publish")
 console = Console()
@@ -185,6 +187,37 @@ def optimize_cmd(
 
 
 # --- Phase 3: order reconciliation ---
+@grow_app.command("run")
+def grow_run(
+    concepts: int = typer.Option(2, help="Concepts per niche."),
+    max_products: int = typer.Option(5, help="Max new products this cycle."),
+    ad_budget: float = typer.Option(5.0, help="Daily ad budget per product."),
+    max_ad_spend: float = typer.Option(20.0, help="Cumulative daily ad-spend cap."),
+    kill_switch: bool = typer.Option(False, help="Halt the cycle immediately."),
+) -> None:
+    """Run one growth cycle (dry-run plan: real niches + decisions, simulated make/ads)."""
+    from etsyshop.growth import Guardrails, build_plan_steps, run_cycle
+    from etsyshop.store import load_store, published_slugs
+
+    guard = Guardrails(max_new_products=max_products, max_daily_ad_spend=max_ad_spend,
+                       kill_switch=kill_switch)
+    report = run_cycle(build_plan_steps(), guardrails=guard,
+                       seen_slugs=published_slugs(load_store()),
+                       concepts_per_niche=concepts, ad_budget=ad_budget)
+    console.print(f"[bold]Cycle[/bold] — would create {len(report.created)}, "
+                  f"advertise {len(report.advertised)} (planned ${report.ad_spend_planned:.2f})")
+    if report.halted:
+        console.print(f"[yellow]halted:[/yellow] {report.halted}")
+    if report.created:
+        console.print(f"  create: {', '.join(report.created)}")
+    if report.decisions:
+        table = Table("product", "action", "reason")
+        for d in report.decisions:
+            table.add_row(d.key, d.action, d.reason)
+        console.print(table)
+    console.print("[dim]Dry-run plan. Wire live steps + creds to execute for real.[/dim]")
+
+
 @app.command("profit")
 def profit_cmd(scale_margin: float = typer.Option(0.25, help="Margin at/above which to scale.")) -> None:
     """Net-profit P&L per listing with scale/hold/kill decisions."""

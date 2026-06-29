@@ -36,15 +36,15 @@ stores to maximize the paid-ads platform.
   by the orchestrator and adsuite. _AC: report assembly tested._
 
 ## Epic G — Growth orchestrator (closed loop)
-- [ ] **G.1** Pipeline state machine: stages (scan→ideate→design→price→publish→
+- [x] **G.1** Pipeline state machine: stages (scan→ideate→design→price→publish→
   advertise→measure→decide→act), each idempotent + resumable + persisted. _AC: tested._
-- [ ] **G.2** `run_cycle()` wiring existing modules via injectable steps; dedupe
+- [x] **G.2** `run_cycle()` wiring existing modules via injectable steps; dedupe
   against state. _AC: tested with mock steps._
-- [ ] **G.3** Guardrails: max new products/day, max ad spend/day, halt on
+- [x] **G.3** Guardrails: max new products/day, max ad spend/day, halt on
   QC/policy fail, global kill switch. _AC: guardrail enforcement tested._
-- [ ] **G.4** Act on decisions: scale winners (clone variations + raise budget),
+- [x] **G.4** Act on decisions: scale winners (clone variations + raise budget),
   kill losers (pause ads + deactivate listing). _AC: tested._
-- [ ] **G.5** CLI `etsyshop grow run` (dry-run default) + schedule/loop hook for
+- [x] **G.5** CLI `etsyshop grow run` (dry-run default) + schedule/loop hook for
   continuous operation. _AC: cycle runs end-to-end with mocks._
 
 ## Epic S — Shopify niche-store factory (`shopkit` subproject)
@@ -78,3 +78,4 @@ stores to maximize the paid-ads platform.
 ## Iteration log
 - (build loop appends here)
 - GI1: Epic P profit brain — ProductPnL (net/margin), platform-fee estimate, build_ledger, revenue/units from receipts, classify scale/hold/kill, rank + decisions, 'etsyshop profit' CLI.
+- GI2: Epic G growth orchestrator — run_cycle engine (select->ideate->make->advertise->measure->decide->act), Guardrails (max products, ad-spend cap, kill switch, QC-halt), dedupe, build_plan_steps offline dry-run, 'etsyshop grow run' CLI.
