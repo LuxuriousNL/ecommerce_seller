@@ -83,3 +83,5 @@ stores to maximize the paid-ads platform.
 - GI4: Epic S (S.4-S.6) — Google Merchant feed (TSV) + pixel config/install, shop registry (+honest manual go-live), profit gating (store only for niches with a scaling winner).
 - GI5: Epic S done — Google Shopping/PMax campaign type + launch_shopping, pixel/ad metrics -> profit ledger (ad_components_from_metrics), full 'shopctl' CLI (status/provision/sync/feed/gate).
 - GI6: Epic V — 'etsyshop doctor' (readiness across all systems) + safe smoke tests, fixture-pinned integration tests (etsy/printify/meta/google/shopify shapes), ONBOARDING.md runbook. BACKLOG COMPLETE.
+- GI7: wired `grow run --execute` to the real modules end-to-end (growth_live.make_concept + build_live_steps): ideate->design+QC->price->publish(digital fully; POD via template)->advertise->measure->decide->act(kill losers). Confirmation + guardrails; 7 tests.
+

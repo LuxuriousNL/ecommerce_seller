@@ -193,15 +193,27 @@ def grow_run(
     max_products: int = typer.Option(5, help="Max new products this cycle."),
     ad_budget: float = typer.Option(5.0, help="Daily ad budget per product."),
     max_ad_spend: float = typer.Option(20.0, help="Cumulative daily ad-spend cap."),
+    margin: float = typer.Option(0.40, help="Target net margin for pricing."),
     kill_switch: bool = typer.Option(False, help="Halt the cycle immediately."),
+    execute: bool = typer.Option(False, help="Run the REAL loop (creates listings + ads)."),
+    ads: bool = typer.Option(True, help="With --execute, advertise published listings."),
+    yes: bool = typer.Option(False, "--yes", help="Skip the --execute confirmation."),
 ) -> None:
-    """Run one growth cycle (dry-run plan: real niches + decisions, simulated make/ads)."""
+    """Run one growth cycle. Dry-run plan by default; --execute runs the real modules."""
     from etsyshop.growth import Guardrails, build_plan_steps, run_cycle
     from etsyshop.store import load_store, published_slugs
 
     guard = Guardrails(max_new_products=max_products, max_daily_ad_spend=max_ad_spend,
                        kill_switch=kill_switch)
-    report = run_cycle(build_plan_steps(), guardrails=guard,
+    if execute:
+        if not yes:
+            typer.confirm("--execute creates real Etsy listings and ad campaigns. Continue?",
+                          abort=True)
+        from etsyshop.growth_live import build_live_steps
+        steps = build_live_steps(etsy=_etsy(), target_margin=margin, run_ads=ads)
+    else:
+        steps = build_plan_steps()
+    report = run_cycle(steps, guardrails=guard,
                        seen_slugs=published_slugs(load_store()),
                        concepts_per_niche=concepts, ad_budget=ad_budget)
     console.print(f"[bold]Cycle[/bold] — would create {len(report.created)}, "
