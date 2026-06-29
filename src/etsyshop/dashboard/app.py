@@ -67,6 +67,20 @@ def create_app() -> FastAPI:
 
         return {"printify": _result(printify_status), "etsy": _result(etsy_status)}
 
+    @app.get("/api/trends")
+    def trends() -> dict:
+        def fetch() -> list[dict]:
+            from etsyshop.trends import trending_now
+
+            return [
+                {"status": s.status, "slug": s.niche.slug, "name": s.niche.name,
+                 "kind": s.niche.kind, "price_low": s.niche.price_low,
+                 "price_high": s.niche.price_high}
+                for s in trending_now()
+            ]
+
+        return _result(fetch)
+
     @app.get("/api/products")
     def products() -> dict:
         def fetch() -> list[dict]:
@@ -144,6 +158,11 @@ INDEX_HTML = """\
   </section>
 
   <section>
+    <h2>Trends now <button class="ghost" onclick="trends()">Load</button></h2>
+    <pre id="trends" class="muted">In-season niches (peak &gt; build &gt; upcoming).</pre>
+  </section>
+
+  <section>
     <h2>Products <button class="ghost" onclick="products()">Refresh</button></h2>
     <pre id="products" class="muted">—</pre>
   </section>
@@ -174,6 +193,7 @@ const get = async (id, url) => { show(id, "Loading…"); try {
   show(id, await (await fetch(url)).json()); } catch (e) { show(id, "Error: " + e); } };
 
 const health   = () => get("health", "/api/health");
+const trends   = () => get("trends", "/api/trends");
 const products = () => get("products", "/api/products");
 const orders   = () => get("orders", "/api/orders");
 

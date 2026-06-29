@@ -55,12 +55,12 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] **E5.4** Shipping-profile + return-policy auto-resolution before activate.
 - [x] **E5.5** Winner tracking: read orders, rank listings, feed back into the
   planner to double down on sellers.
-- [ ] **E5.6** Print-standard normalization (300 DPI, sRGB, PNG/transparent) via
+- [x] **E5.6** Print-standard normalization (300 DPI, sRGB, PNG/transparent) via
   optional Pillow extra.
 - [x] **E5.7** Structured logging across the pipeline.
-- [ ] **E5.8** CI (GitHub Actions) running `pytest` + ruff on push.
-- [ ] **E5.9** Dockerfile for the dashboard + a scanner runner.
-- [ ] **E5.10** `dashboard`: add trends/plan/design panels.
+- [x] **E5.8** CI (GitHub Actions) running `pytest` + ruff on push.
+- [x] **E5.9** Dockerfile for the dashboard + a scanner runner.
+- [x] **E5.10** `dashboard`: add trends/plan/design panels.
 
 ---
 
@@ -73,3 +73,4 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - I6: E5.1 real Printify variant cost (min enabled, used in publish pod repricing); E5.2 retry+backoff (Retry-After honored) on Etsy+Printify clients.
 - I7: E5.4 auto-resolve shipping profile + return policy before physical activate (best-effort); E5.5 winner tracking (rank listings by units+revenue) + 'winners' CLI.
 - I8: E5.3 multi-variant inventory (update_listing_inventory + SKU-keyed build) and SKU-based fulfillment routing; E5.7 structured logging (setup_logging + get_logger, wired into CLI/publisher).
+- I9: E5.6 print normalization (Pillow, optional [images] extra); E5.8 GitHub Actions CI (ruff+pytest); E5.9 Dockerfile (dashboard/scanner); E5.10 dashboard trends panel. BACKLOG COMPLETE.

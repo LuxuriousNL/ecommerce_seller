@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from etsyshop.models import Design, OptimizedListing, ProductTemplate
 from etsyshop.pipeline import build_product_payload, create_design_product

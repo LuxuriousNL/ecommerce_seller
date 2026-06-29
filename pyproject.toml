@@ -18,8 +18,9 @@ etsyshop = "etsyshop.cli:app"
 trendscan = "trendscanner.scan:main"
 
 [project.optional-dependencies]
-dev = ["ruff>=0.5", "pytest>=8.0"]
+dev = ["ruff>=0.5", "pytest>=8.0", "pillow>=10"]
 dashboard = ["fastapi>=0.110", "uvicorn>=0.29"]
+images = ["pillow>=10"]
 
 [build-system]
 requires = ["hatchling"]

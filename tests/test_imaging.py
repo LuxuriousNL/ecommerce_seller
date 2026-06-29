@@ -6,7 +6,6 @@ import base64
 from types import SimpleNamespace
 
 import httpx
-import pytest
 
 from etsyshop import imagegen
 from etsyshop.config import settings

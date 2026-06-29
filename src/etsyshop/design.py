@@ -37,6 +37,7 @@ def create_design(
     qc: bool = True,
     provider: ImageProvider | None = None,
     qc_client: anthropic.Anthropic | None = None,
+    normalize: bool = True,
     art_dir: Path = ART_DIR,
     brief_dir: Path = BRIEF_DIR,
 ) -> DesignArtifact:
@@ -54,6 +55,12 @@ def create_design(
         image = provider.generate(brief, transparent=True)
     except Exception as exc:  # noqa: BLE001
         return DesignArtifact(slug, "error", provider=provider.name, error=str(exc))
+
+    # Print-standard normalization for raster art (300 DPI, RGBA PNG).
+    if normalize and image.mime == "image/png":
+        from etsyshop.imagestd import normalize_print
+
+        image.data, _ = normalize_print(image.data)
 
     art_dir.mkdir(parents=True, exist_ok=True)
     path = art_dir / f"{slug}.{image.ext}"

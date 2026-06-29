@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import httpx
-import pytest
 
 from etsyshop.clients import etsy as etsy_mod
 from etsyshop.clients.etsy import EtsyClient

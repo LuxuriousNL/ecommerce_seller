@@ -57,6 +57,12 @@ def test_health_reports_both_services(client):
     assert body["etsy"]["ok"] and body["etsy"]["data"]["user_id"] == 77
 
 
+def test_trends_panel_endpoint(client):
+    body = client.get("/api/trends").json()
+    assert body["ok"]
+    assert isinstance(body["data"], list)  # in-season niches for the current date
+
+
 def test_products_lists_titles(client):
     body = client.get("/api/products").json()
     assert body["ok"]

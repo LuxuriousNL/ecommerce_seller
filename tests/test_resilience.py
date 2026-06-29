@@ -6,7 +6,7 @@ import httpx
 import pytest
 
 from etsyshop.clients import etsy as etsy_mod
-from etsyshop.clients.etsy import EtsyClient, EtsyError
+from etsyshop.clients.etsy import EtsyClient
 from etsyshop.clients.printify import BASE_URL, PrintifyClient, PrintifyError
 from etsyshop.engine import product_cost_from_printify
 
